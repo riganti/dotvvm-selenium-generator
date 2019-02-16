@@ -1,0 +1,6 @@
+﻿@viewModel SampleApp1.ViewModels.DefaultViewModel, SampleApp1
+@masterPage Views/MasterPage.dotmaster
+<dot:Content ContentPlaceHolderID="MainContent">
+
+	<h1>{{value: Title}}</h1>
+</dot:Content>
