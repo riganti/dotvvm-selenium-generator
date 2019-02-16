@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
-using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
 using DotVVM.Framework.Controls;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
@@ -25,7 +24,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         /// Gets a value indicating whether the content of the control can be used to generate the control name.
         /// </summary>
         public abstract bool CanUseControlContentForName { get; }
-        
+
 
         /// <summary>
         /// Gets a list of declarations emitted by the control.
@@ -70,7 +69,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         {
             // find end of the tag
             var token = context.Control.DothtmlNode.Tokens.First(t => t.Type == DothtmlTokenType.CloseTag || t.Type == DothtmlTokenType.Slash);
-            
+
             helper.MarkupFileModifications.Add(new MarkupFileInsertText()
             {
                 Text = " UITests.Name=\"" + uniqueName + "\"",
@@ -92,6 +91,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                     uniqueName = TryGetNameFromProperty(context.Control, nameProperty);
                     if (uniqueName != null)
                     {
+                        uniqueName = NormalizeUniqueName(uniqueName);
                         break;
                     }
                 }
@@ -108,8 +108,45 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 uniqueName = typeof(TControl).Name;
             }
-            
+
             return uniqueName;
+        }
+
+        private string NormalizeUniqueName(string uniqueName)
+        {
+            var normalizedName = RemoveDiacritics(uniqueName);
+            var firstLetterOfName = normalizedName[0];
+
+            // if first letter is numeric add underscore to the name
+            if (char.IsDigit(firstLetterOfName))
+            {
+                normalizedName = normalizedName.Insert(0, "_");
+            }
+            else
+            {
+                char[] a = normalizedName.ToCharArray();
+                a[0] = char.ToUpper(a[0]);
+                normalizedName = new string(a);
+            }
+
+            return normalizedName;
+        }
+
+        private string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
         protected string TryGetNameFromProperty(ResolvedControl control, DotvvmProperty property)
@@ -119,11 +156,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 if (setter is ResolvedPropertyValue)
                 {
-                    return RemoveNonIdentifierCharacters(((ResolvedPropertyValue) setter).Value?.ToString());
+                    return RemoveNonIdentifierCharacters(((ResolvedPropertyValue)setter).Value?.ToString());
                 }
                 else if (setter is ResolvedPropertyBinding)
                 {
-                    var binding = ((ResolvedPropertyBinding) setter).Binding;
+                    var binding = ((ResolvedPropertyBinding)setter).Binding;
                     return RemoveNonIdentifierCharacters(binding.Value);
                 }
             }
@@ -194,7 +231,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                     ));
             }
         }
-        
+
 
         protected MemberDeclarationSyntax GeneratePropertyForProxy(SeleniumGeneratorContext context, string typeName, params string[] genericTypeNames)
         {

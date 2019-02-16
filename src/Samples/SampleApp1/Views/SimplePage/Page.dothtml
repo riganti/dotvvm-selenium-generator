@@ -35,7 +35,7 @@
             <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}" />
         </p>
         <p>
-            <dot:Button Text="Create Company" Click="{command: CreateCompany()}" UITests.Name="CreateCompany"/>
+            <dot:Button Text="Create Company" Click="{command: CreateCompany()}"  UITests.Name="CreateCompany"/>
             <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}"  UITests.Name="ResetForm"/>
         </p>
     </div>
