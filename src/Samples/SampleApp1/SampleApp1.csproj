@@ -18,8 +18,17 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+        <None Remove="Controls\ControlA.dotcontrol" />
+        <None Remove="Controls\ControlB.dotcontrol" />
+        <None Remove="Controls\Counter.dotcontrol" />
         <None Remove="dotvvm_serialized_config.json.tmp" />
-        <None Remove="Views\MasterPage.dotmaster" />
+        <None Remove="Views\Controls\PageWithControls.dothtml" />
+        <None Remove="Views\Default.dothtml" />
+        <None Remove="Views\MasterPages\Layout.dotmaster" />
+        <None Remove="Views\MasterPages\PageA.dothtml" />
+        <None Remove="Views\MasterPages\PageB.dothtml" />
+        <None Remove="Views\MasterPages\Site.dotmaster" />
+        <None Remove="Views\SimplePage\Page.dothtml" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="wwwroot\" />

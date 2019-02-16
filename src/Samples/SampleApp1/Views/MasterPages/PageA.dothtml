@@ -1,0 +1,53 @@
+﻿@viewModel SampleApp1.ViewModels.MasterPages.PageAViewModel, SampleApp1
+@masterPage Views/MasterPages/Site.dotmaster
+
+<dot:Content ContentPlaceHolderID="Content">
+
+    <h2>Page A</h2>
+
+    <div DataContext="{value: Login}">
+
+        <p>
+            E-mail:
+            <dot:TextBox Text="{value: Email}" />
+        </p>
+        <p>
+            Password:
+            <dot:TextBox Text="{value: Password}" Type="Password" />
+        </p>
+        <p>
+            <dot:Button Text="Sign In" Click="{command: _root.SignIn()}" />
+        </p>
+
+    </div>
+
+    <div DataContext="{value: Register}">
+
+        <p>
+            Name:
+            <dot:TextBox Text="{value: Name}" />
+        </p>
+        <p>
+            E-mail:
+            <dot:TextBox Text="{value: Email}" />
+        </p>
+        <p>
+            Password:
+            <dot:TextBox Text="{value: Password}" Type="Password" />
+        </p>
+        <p>
+            Confirm Password:
+            <dot:TextBox Text="{value: ConfirmPassword}" Type="Password" />
+        </p>
+        <p>
+            <dot:Button Text="Sign Up" Click="{command: _root.SignUp()}" />
+        </p>
+
+    </div>
+
+    <div Visible="{value: StatusMessage != null}">
+        <dot:Literal Text="{value: StatusMessage}" />
+    </div>
+
+</dot:Content>
+

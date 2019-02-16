@@ -1,0 +1,35 @@
+﻿@viewModel SampleApp1.ViewModels.MasterPages.PageBViewModel, SampleApp1
+@masterPage Views/MasterPages/Site.dotmaster
+
+<dot:Content ContentPlaceHolderID="Content">
+
+    <h2>Page B</h2>
+
+    <style type="text/css">
+        .completed {
+            text-decoration: line-through;
+        }
+    </style>
+
+    <div DataContext="{value: NewTask}">
+        <dot:TextBox Text="{value: Text}" />
+        <dot:Button Text="Add Task" Click="{command: _root.AddTask()}" />
+    </div>
+
+    <table>
+        <dot:Repeater DataSource="{value: Tasks}" WrapperTagName="tbody">
+            <tr>
+                <td class-completed="{value: IsCompleted}">
+                    {{value: Text}}
+                </td>
+                <td>
+                    <dot:LinkButton Text="Finished" 
+                                    Visible="{value: !IsCompleted}"
+                                    Click="{command: _root.SetCompleted(_this)}" />
+                </td>
+            </tr>
+        </dot:Repeater>
+    </table>
+
+</dot:Content>
+

@@ -1,6 +1,32 @@
 ﻿@viewModel SampleApp1.ViewModels.DefaultViewModel, SampleApp1
-@masterPage Views/MasterPage.dotmaster
-<dot:Content ContentPlaceHolderID="MainContent">
 
-	<h1>{{value: Title}}</h1>
-</dot:Content>
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <h1>Sample App 1</h1>
+
+    <menu>
+        <li>
+            <dot:RouteLink RouteName="SimplePage_Page" Text="Simple Page" />
+        </li>
+        <li>
+            <dot:RouteLink RouteName="MasterPages_PageA" Text="Master Pages - Page A" />
+        </li>
+        <li>
+            <dot:RouteLink RouteName="MasterPages_PageB" Text="Master Pages - Page B" />
+        </li>
+        <li>
+            <dot:RouteLink RouteName="Controls_PageWithControls" Text="Page With Controls" />
+        </li>
+    </menu>
+
+</body>
+</html>
+
+

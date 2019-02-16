@@ -1,0 +1,35 @@
+﻿@viewModel SampleApp1.ViewModels.Controls.PageWithControlsViewModel, SampleApp1
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <h1>Page with markup control hierarchy</h1>
+
+    <fieldset>
+        <legend>Control A</legend>
+
+        <cc:ControlA />
+    </fieldset>
+
+    <fieldset>
+        <legend>Control B</legend>
+
+        <dot:Repeater DataSource="{value: Sections}">
+            <cc:ControlB />
+        </dot:Repeater>
+
+        <p>
+            <dot:Button Text="Add Control B" Click="{command: AddControlB()}" />
+        </p>
+    </fieldset>
+
+</body>
+</html>
+
+

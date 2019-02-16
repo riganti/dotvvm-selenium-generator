@@ -1,0 +1,49 @@
+﻿@viewModel SampleApp1.ViewModels.SimplePage.PageViewModel, SampleApp1
+@import SampleApp1
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <h1>Simple Page</h1>
+    <p>Simple page without master pages and markup controls</p>
+
+    <div>
+        <p>
+            Type:
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person" />
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company" />
+        </p>
+        <p>
+            Name:
+            <dot:TextBox Text="{value: Name}" />
+        </p>
+        <p>
+            Address:
+            <dot:TextBox Text="{value: Address}" />
+        </p>
+        <p>
+            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}" />
+        </p>
+        <p>
+            Country Code:
+            <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}" />
+        </p>
+        <p>
+            <dot:Button Text="Create Company" Click="{command: CreateCompany()}" />
+            <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}" />
+        </p>
+    </div>
+
+    <dot:Literal Text="{value: StatusMessage}" />
+
+
+</body>
+</html>
+
+
