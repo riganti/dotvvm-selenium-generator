@@ -21,7 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Proxies", "Proxies", "{8095
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E7E2CC6D-6B3F-4913-BEB7-9EEA27F6281B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp1", "Samples\SampleApp1\SampleApp1.csproj", "{D2CBEA9B-358E-4A49-8B49-888BB6FF9800}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApp1", "Samples\SampleApp1\SampleApp1.csproj", "{D2CBEA9B-358E-4A49-8B49-888BB6FF9800}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.CommandLine.Core", "..\dotvvm\src\DotVVM.CommandLine.Core\DotVVM.CommandLine.Core.csproj", "{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{D2CBEA9B-358E-4A49-8B49-888BB6FF9800}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2CBEA9B-358E-4A49-8B49-888BB6FF9800}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2CBEA9B-358E-4A49-8B49-888BB6FF9800}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{1A8EE52B-2FE7-4ADB-8835-7F560AD793FE} = {089DC67C-3FB5-4330-B201-E5E27C768BC5}
 		{4CB0C492-A0A8-48F7-9A67-ACE7A2AA546E} = {089DC67C-3FB5-4330-B201-E5E27C768BC5}
 		{D2CBEA9B-358E-4A49-8B49-888BB6FF9800} = {E7E2CC6D-6B3F-4913-BEB7-9EEA27F6281B}
+		{25FCEE31-C5C5-48B0-95F8-E0A3CDBF29F0} = {DA217F52-F86E-4DEA-92EB-9CFAE8216CD0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F531FEB-3515-428B-9DBD-FB81D363B433}
