@@ -19,7 +19,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(Button), new ButtonGenerator() },
             { typeof(Literal), new LiteralGenerator() },
             { typeof(Repeater), new RepeaterGenerator() },
-            { typeof(ValidationSummary), new ValidationSummaryGenerator() }
+            { typeof(ValidationSummary), new ValidationSummaryGenerator() },
+            { typeof(RadioButton), new RadioButtonControlGenerator()},
+            { typeof(LinkButton), new LinkButtonControlGenerator()},
+            { typeof(RouteLink), new RouteLinkControlGenerator()},
         };
 
 

@@ -73,7 +73,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             
             helper.MarkupFileModifications.Add(new MarkupFileInsertText()
             {
-                Text = " data-ui=\"" + uniqueName + "\"",
+                Text = " UITests.Name=\"" + uniqueName + "\"",
                 Position = token.StartPosition
             });
         }

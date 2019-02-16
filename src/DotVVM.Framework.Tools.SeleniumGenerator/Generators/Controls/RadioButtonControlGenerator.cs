@@ -3,21 +3,15 @@ using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class ButtonGenerator : SeleniumGenerator<Button>
+    public class RadioButtonControlGenerator : SeleniumGenerator<RadioButton>
     {
-        private static readonly DotvvmProperty[] nameProperties = new[] { ButtonBase.TextProperty, ButtonBase.ClickProperty, Validator.ValueProperty };
-
-        public override DotvvmProperty[] NameProperties => nameProperties;
-
+        public override DotvvmProperty[] NameProperties { get; } = {CheckableControlBase.TextProperty, CheckableControlBase.CheckedValueProperty, RadioButton.CheckedProperty};
         public override bool CanUseControlContentForName => true;
-
-
         protected override void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context)
         {
-            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.ButtonProxy";
+            const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.RadioButtonProxy";
             helper.Members.Add(GeneratePropertyForProxy(context, type));
             helper.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
+using DotVVM.CommandLine.Core;
 using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
@@ -56,7 +57,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     .NormalizeWhitespace()
             );
 
-            File.WriteAllText(seleniumConfiguration.HelperFileFullPath, tree.ToString(), Encoding.UTF8);
+            FileSystemHelpers.WriteFile(seleniumConfiguration.HelperFileFullPath, tree.ToString(), false);
         }
 
         private static HelperDefinition CreateHelperDefinition(SeleniumGeneratorConfiguration seleniumConfiguration, IAbstractTreeRoot tree)

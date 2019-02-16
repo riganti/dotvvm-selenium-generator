@@ -16,31 +16,31 @@
     <div>
         <p>
             Type:
-            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person" />
-            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company" />
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person"  UITests.Name="ModelsAddressTypePerson"/>
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company"  UITests.Name="ModelsAddressTypeCompany"/>
         </p>
         <p>
             Name:
-            <dot:TextBox Text="{value: Name}" />
+            <dot:TextBox Text="{value: Name}"  UITests.Name="Name"/>
         </p>
         <p>
             Address:
-            <dot:TextBox Text="{value: Address}" />
+            <dot:TextBox Text="{value: Address}"  UITests.Name="Address"/>
         </p>
         <p>
-            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}" />
+            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}" UITests.Name="IsEuVatPayer"/>
         </p>
         <p>
             Country Code:
             <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}" />
         </p>
         <p>
-            <dot:Button Text="Create Company" Click="{command: CreateCompany()}" />
-            <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}" />
+            <dot:Button Text="Create Company" Click="{command: CreateCompany()}" UITests.Name="CreateCompany"/>
+            <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}"  UITests.Name="ResetForm"/>
         </p>
     </div>
 
-    <dot:Literal Text="{value: StatusMessage}" />
+    <dot:Literal Text="{value: StatusMessage}" UITests.Name="StatusMessage"/>
 
 
 </body>

@@ -21,7 +21,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
 
         public string BuildElementSelector(string elementUniqueName)
         {
-            var selector = $"[data-ui={elementUniqueName}]";
+            var selector = $"[UITests.Name={elementUniqueName}]";
 
             if (string.IsNullOrEmpty(SelectorPrefix))
             {
