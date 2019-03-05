@@ -14,6 +14,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             return FindElement().FindElements(By.XPath("*")).Count;
         }
 
+        // TODO: CssSelector class
         public TItemHelper GetItem(int index)
         {
             var selector = Helper.BuildElementSelector(Selector) + ">*:nth-child(" + (index + 1) + ")";

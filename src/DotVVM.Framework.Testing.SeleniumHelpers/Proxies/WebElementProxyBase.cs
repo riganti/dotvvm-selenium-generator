@@ -16,6 +16,8 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             Selector = selector;
         }
 
+        // TODO: rewrite - filter (check OneNote)
+        // selector can't be string - use some object or list
         protected IWebElement FindElement()
         {
             var selector = Helper.BuildElementSelector(Selector);
