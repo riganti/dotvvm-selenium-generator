@@ -11,8 +11,6 @@ namespace SampleApp1.ViewModels.SimplePage
     {
         public AddressType AddressType { get; set; }
 
-        public string Name { get; set; }
-
         public string Address { get; set; }
 
         public bool IsEuVatPayer { get; set; }
@@ -23,6 +21,8 @@ namespace SampleApp1.ViewModels.SimplePage
 
         public string StatusMessage { get; set; }
 
+        public NameData Name { get; set; } = new NameData();
+
         public void CreateCompany()
         {
             StatusMessage = $"The company {Name} was created.";
@@ -31,13 +31,20 @@ namespace SampleApp1.ViewModels.SimplePage
         public void ResetForm()
         {
             AddressType = AddressType.Person;
-            Name = "";
+            Name = new NameData();
             Address = "";
             IsEuVatPayer = false;
             CountryCode = "";
             StatusMessage = "";
         }
 
+    }
+
+    public class NameData
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
     }
 }
 

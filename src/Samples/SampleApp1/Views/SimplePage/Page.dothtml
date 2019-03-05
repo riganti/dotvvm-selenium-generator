@@ -19,9 +19,11 @@
             <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person"  UITests.Name="ModelsAddressTypePerson"/>
             <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company"  UITests.Name="ModelsAddressTypeCompany"/>
         </p>
-        <p>
-            Name:
-            <dot:TextBox Text="{value: Name}"  UITests.Name="Name"/>
+        <p DataContext="{value: Name}">
+            First Name:
+            <dot:TextBox Text="{value: FirstName}" UITests.Name="Name" />
+            Last Name:
+            <dot:TextBox Text="{value: LastName}" UITests.Name="Name" />
         </p>
         <p>
             Address:

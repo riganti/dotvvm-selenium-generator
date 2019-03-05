@@ -11,6 +11,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
     {
         private Stack<HelperDefinition> HelperDefinitionsStack { get; } = new Stack<HelperDefinition>();
 
+        private List<string> DataContextStack { get; set; } = new List<string>();
 
         private static Dictionary<Type, ISeleniumGenerator> generators = new Dictionary<Type, ISeleniumGenerator>()
         {
@@ -39,8 +40,18 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         public override void VisitControl(ResolvedControl control)
         {
-            ISeleniumGenerator generator;
-            if (generators.TryGetValue(control.Metadata.Type, out generator))
+            var dataContextNameSet = false;
+            if (control.TryGetProperty(DotvvmBindableObject.DataContextProperty, out var property))
+            {
+                if (property is ResolvedPropertyBinding dataContextProperty)
+                {
+                    var dataContextName = dataContextProperty.Binding.Value;
+                    DataContextStack.Add(dataContextName);
+                    dataContextNameSet = true;
+                }
+            }
+
+            if (generators.TryGetValue(control.Metadata.Type, out var generator))
             {
                 var helperDefinition = HelperDefinitionsStack.Peek();
 
@@ -59,6 +70,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }
 
             base.VisitControl(control);
+
+            if (dataContextNameSet)
+            {
+                DataContextStack.RemoveAt(DataContextStack.Count - 1);
+            }
         }
     }
 }
