@@ -1,3 +1,4 @@
+using System;
 using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
@@ -25,6 +26,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         /// </summary>
         public abstract bool CanUseControlContentForName { get; }
 
+
+        public Type ControlType => typeof(TControl);
 
         /// <summary>
         /// Gets a list of declarations emitted by the control.

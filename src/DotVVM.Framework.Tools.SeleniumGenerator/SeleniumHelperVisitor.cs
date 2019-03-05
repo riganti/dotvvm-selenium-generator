@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using DotVVM.Framework.Compilation.ControlTree.Resolved;
+﻿using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
+using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls;
+using DotVVM.Framework.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -13,7 +16,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private List<string> DataContextStack { get; set; } = new List<string>();
 
-        private static Dictionary<Type, ISeleniumGenerator> generators = new Dictionary<Type, ISeleniumGenerator>()
+        private static readonly Dictionary<Type, ISeleniumGenerator> Generators = new Dictionary<Type, ISeleniumGenerator>()
         {
             { typeof(TextBox), new TextBoxGenerator() },
             { typeof(CheckBox), new CheckBoxGenerator() },
@@ -25,6 +28,15 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(LinkButton), new LinkButtonControlGenerator()},
             { typeof(RouteLink), new RouteLinkControlGenerator()},
         };
+
+        private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)
+        {
+            return options.Assemblies
+                 .SelectMany(a => a.GetLoadableTypes())
+                 .Where(t => typeof(ISeleniumGenerator).IsAssignableFrom(t) && !t.IsAbstract)
+                 .Select(t => (ISeleniumGenerator)Activator.CreateInstance(t))
+                 .ToDictionary(t => t.ControlType, t => t);
+        }
 
 
         public void PushScope(HelperDefinition definition)
@@ -38,6 +50,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         }
 
 
+        // TODO: if dotcontrol - use dotvvmControlGenerator
         public override void VisitControl(ResolvedControl control)
         {
             var dataContextNameSet = false;
@@ -51,12 +64,16 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 }
             }
 
-            if (generators.TryGetValue(control.Metadata.Type, out var generator))
+            // check if dataContext is set 
+            // if yes push to DataContextPrefixes
+
+            if (Generators.TryGetValue(control.Metadata.Type, out var generator))
             {
                 var helperDefinition = HelperDefinitionsStack.Peek();
 
                 // generate the content
-                var context = new SeleniumGeneratorContext() {
+                var context = new SeleniumGeneratorContext()
+                {
                     Control = control,
                     UsedNames = helperDefinition.UsedNames,
                     Visitor = this
