@@ -35,7 +35,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         public void AddDeclarations(HelperDefinition helper, SeleniumGeneratorContext context)
         {
             // determine the name
-            var uniqueName = DetermineName(context);
+            var uniqueName = DetermineName(helper, context);
 
             // make the name unique
             if (context.UsedNames.Contains(uniqueName))
@@ -45,7 +45,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 {
                     index++;
                 }
-                uniqueName = uniqueName + index;
+
+                uniqueName += index;
             }
             context.UsedNames.Add(uniqueName);
             context.UniqueName = uniqueName;
@@ -81,7 +82,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         }
 
 
-        protected virtual string DetermineName(SeleniumGeneratorContext context)
+        protected virtual string DetermineName(HelperDefinition helper, SeleniumGeneratorContext context)
         {
             // get the name from the UITest.Name property
             var uniqueName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
@@ -112,7 +113,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 uniqueName = typeof(TControl).Name;
             }
 
+            uniqueName = AddDataContextPrefixesToName(helper.DataContextPrefixes, uniqueName);
+
             return uniqueName;
+        }
+
+        private string AddDataContextPrefixesToName(IEnumerable<string> dataContextPrefixes, string uniqueName)
+        {
+            return $"{string.Join("_", dataContextPrefixes)}_{uniqueName}";
         }
 
         private string NormalizeUniqueName(string uniqueName)

@@ -14,9 +14,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
     {
         private Stack<HelperDefinition> HelperDefinitionsStack { get; } = new Stack<HelperDefinition>();
 
-        private List<string> DataContextStack { get; set; } = new List<string>();
+        //private List<string> DataContextStack { get; set; } = new List<string>();
 
-        private static readonly Dictionary<Type, ISeleniumGenerator> Generators = new Dictionary<Type, ISeleniumGenerator>()
+        private static readonly Dictionary<Type, ISeleniumGenerator> generators = new Dictionary<Type, ISeleniumGenerator>()
         {
             { typeof(TextBox), new TextBoxGenerator() },
             { typeof(CheckBox), new CheckBoxGenerator() },
@@ -53,24 +53,21 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         // TODO: if dotcontrol - use dotvvmControlGenerator
         public override void VisitControl(ResolvedControl control)
         {
+            var helperDefinition = HelperDefinitionsStack.Peek();
+
             var dataContextNameSet = false;
             if (control.TryGetProperty(DotvvmBindableObject.DataContextProperty, out var property))
             {
                 if (property is ResolvedPropertyBinding dataContextProperty)
                 {
                     var dataContextName = dataContextProperty.Binding.Value;
-                    DataContextStack.Add(dataContextName);
+                    helperDefinition.DataContextPrefixes.Add(dataContextName);
                     dataContextNameSet = true;
                 }
             }
 
-            // check if dataContext is set 
-            // if yes push to DataContextPrefixes
-
-            if (Generators.TryGetValue(control.Metadata.Type, out var generator))
+            if (generators.TryGetValue(control.Metadata.Type, out var generator))
             {
-                var helperDefinition = HelperDefinitionsStack.Peek();
-
                 // generate the content
                 var context = new SeleniumGeneratorContext()
                 {
@@ -90,7 +87,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
             if (dataContextNameSet)
             {
-                DataContextStack.RemoveAt(DataContextStack.Count - 1);
+                helperDefinition.DataContextPrefixes.RemoveAt(helperDefinition.DataContextPrefixes.Count - 1);
             }
         }
     }

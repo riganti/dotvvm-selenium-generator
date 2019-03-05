@@ -21,9 +21,9 @@
         </p>
         <p DataContext="{value: Name}">
             First Name:
-            <dot:TextBox Text="{value: FirstName}" UITests.Name="Name" />
+            <dot:TextBox Text="{value: FirstName}"  UITests.Name="Name_FirstName"/>
             Last Name:
-            <dot:TextBox Text="{value: LastName}" UITests.Name="Name" />
+            <dot:TextBox Text="{value: LastName}"  UITests.Name="Name_LastName"/>
         </p>
         <p>
             Address:
