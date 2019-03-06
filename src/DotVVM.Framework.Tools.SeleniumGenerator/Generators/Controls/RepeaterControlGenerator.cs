@@ -9,7 +9,7 @@ using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class RepeaterGenerator : SeleniumGenerator<Repeater>
+    public class RepeaterControlGenerator : SeleniumGenerator<Repeater>
     {
         private static readonly DotvvmProperty[] nameProperties = new[] { ItemsControl.DataSourceProperty };
 
@@ -19,7 +19,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
 
 
-        protected override void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context)
+        protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             IAbstractPropertySetter itemTemplate;
             if (context.Control.TryGetProperty(Repeater.ItemTemplateProperty, out itemTemplate))
@@ -28,14 +28,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
                 // generate child helper class
                 var itemHelperName = context.UniqueName + "RepeaterHelper";
-                context.Visitor.PushScope(new HelperDefinition() { Name = itemHelperName });
+                context.Visitor.PushScope(new PageObjectDefinition() { Name = itemHelperName });
                 context.Visitor.VisitPropertyTemplate(template);
-                helper.Children.Add(context.Visitor.PopScope());
+                pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate property
                 var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.RepeaterProxy";
-                helper.Members.Add(GeneratePropertyForProxy(context, type, itemHelperName));
-                helper.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
+                pageObject.Members.Add(GeneratePropertyForProxy(context, type, itemHelperName));
+                pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
             }
         }
     }

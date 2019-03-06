@@ -5,7 +5,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
     public class SeleniumGeneratorContext
     {
-
         public ResolvedControl Control { get; set; }
 
         public string Selector { get; set; }
@@ -14,6 +13,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         public HashSet<string> UsedNames { get; set; }
 
-        public SeleniumHelperVisitor Visitor { get; set; }
+        public SeleniumPageObjectVisitor Visitor { get; set; }
     }
 }

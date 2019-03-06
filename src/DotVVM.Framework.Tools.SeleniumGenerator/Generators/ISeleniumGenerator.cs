@@ -8,8 +8,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
     {
         Type ControlType { get; }
 
-        void AddDeclarations(HelperDefinition helper, SeleniumGeneratorContext context);
+        void AddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context);
 
-        bool CanAddDeclarations(HelperDefinition helperDefinition, SeleniumGeneratorContext context);
+        bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context);
     }
 }

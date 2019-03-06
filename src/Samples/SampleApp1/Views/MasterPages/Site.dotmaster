@@ -5,10 +5,10 @@
 
     <menu>
         <li>
-            <dot:RouteLink RouteName="MasterPages_PageA" Text="Page A" />
+            <dot:RouteLink RouteName="MasterPages_PageA" Text="Page A"  UITests.Name="PageA"/>
         </li>
         <li>
-            <dot:RouteLink RouteName="MasterPages_PageB" Text="Page B" />
+            <dot:RouteLink RouteName="MasterPages_PageB" Text="Page B"  UITests.Name="PageB"/>
         </li>
     </menu>
 

@@ -32,22 +32,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         /// <summary>
         /// Gets a list of declarations emitted by the control.
         /// </summary>
-        public void AddDeclarations(HelperDefinition helper, SeleniumGeneratorContext context)
+        public void AddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             // determine the name
-            var uniqueName = DetermineName(helper, context);
+            var propertyName = DetermineName(pageObject, context);
 
             // make the name unique
-            if (context.UsedNames.Contains(uniqueName))
-            {
-                var index = 1;
-                while (context.UsedNames.Contains(uniqueName + index))
-                {
-                    index++;
-                }
+            var uniqueName = MakePropertyNameUnique(context, propertyName);
 
-                uniqueName += index;
-            }
             context.UsedNames.Add(uniqueName);
             context.UniqueName = uniqueName;
 
@@ -57,35 +49,53 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 selector = uniqueName;
 
-                AddUITestNameProperty(helper, context, uniqueName);
+                AddUITestNameProperty(pageObject, context, uniqueName);
             }
             context.Selector = selector;
 
-            AddDeclarationsCore(helper, context);
+            AddDeclarationsCore(pageObject, context);
         }
 
-        public virtual bool CanAddDeclarations(HelperDefinition helperDefinition, SeleniumGeneratorContext context)
+        private static string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
+        {
+            if (context.UsedNames.Contains(propertyName))
+            {
+                var index = 1;
+                while (context.UsedNames.Contains(propertyName + index))
+                {
+                    index++;
+                }
+
+                propertyName += index;
+            }
+
+            return propertyName;
+        }
+
+        public virtual bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context)
         {
             return true;
         }
 
-        private void AddUITestNameProperty(HelperDefinition helper, SeleniumGeneratorContext context, string uniqueName)
+        private void AddUITestNameProperty(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string uniqueName)
         {
             // find end of the tag
             var token = context.Control.DothtmlNode.Tokens.First(t => t.Type == DothtmlTokenType.CloseTag || t.Type == DothtmlTokenType.Slash);
 
-            helper.MarkupFileModifications.Add(new MarkupFileInsertText()
+            pageObject.MarkupFileModifications.Add(new MarkupFileInsertText()
             {
                 Text = " UITests.Name=\"" + uniqueName + "\"",
                 Position = token.StartPosition
             });
         }
 
-
-        protected virtual string DetermineName(HelperDefinition helper, SeleniumGeneratorContext context)
+        protected virtual string DetermineName(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             // get the name from the UITest.Name property
             var uniqueName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
+
+            // if selector is set, just read it and don't add data context prefixes
+            var shouldAddDataContextPrefixes = uniqueName == null;
 
             // if not found, use the name properties to determine the name
             if (uniqueName == null)
@@ -113,14 +123,27 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 uniqueName = typeof(TControl).Name;
             }
 
-            uniqueName = AddDataContextPrefixesToName(helper.DataContextPrefixes, uniqueName);
+            if (shouldAddDataContextPrefixes)
+            {
+                uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
+            }
 
             return uniqueName;
         }
 
-        private string AddDataContextPrefixesToName(IEnumerable<string> dataContextPrefixes, string uniqueName)
+        private string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
         {
-            return $"{string.Join("_", dataContextPrefixes)}_{uniqueName}";
+            if(dataContextPrefixes.Any())
+            {
+                uniqueName = $"{string.Join("", dataContextPrefixes)}{SetFirstLetterUp(uniqueName)}";
+            }
+
+            return uniqueName;
+        }
+
+        private string SetFirstLetterUp(string uniqueName)
+        {
+            return uniqueName.First().ToString().ToUpper() + uniqueName.Substring(1);
         }
 
         private string NormalizeUniqueName(string uniqueName)
@@ -275,7 +298,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             );
         }
 
-        protected abstract void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context);
+        protected abstract void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context);
 
     }
 }

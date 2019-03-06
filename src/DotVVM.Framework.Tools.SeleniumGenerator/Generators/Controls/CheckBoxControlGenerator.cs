@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class CheckBoxGenerator : SeleniumGenerator<CheckBox>
+    public class CheckBoxControlGenerator : SeleniumGenerator<CheckBox>
     {
         private static readonly DotvvmProperty[] nameProperties = new [] { CheckBox.CheckedProperty, CheckBox.CheckedItemsProperty, Validator.ValueProperty };
 
@@ -16,11 +16,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
 
 
-        protected override void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context)
+        protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.CheckBoxProxy";
-            helper.Members.Add(GeneratePropertyForProxy(context, type));
-            helper.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
 
     }

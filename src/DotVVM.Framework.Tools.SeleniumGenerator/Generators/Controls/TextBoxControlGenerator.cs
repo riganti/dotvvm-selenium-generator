@@ -6,9 +6,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class TextBoxGenerator : SeleniumGenerator<TextBox>
+    public class TextBoxControlGenerator : SeleniumGenerator<TextBox>
     {
-        private static readonly DotvvmProperty[] nameProperties = new [] { TextBox.TextProperty, Validator.ValueProperty };
+        private static readonly DotvvmProperty[] nameProperties = new[] { TextBox.TextProperty, Validator.ValueProperty };
 
         public override DotvvmProperty[] NameProperties => nameProperties;
 
@@ -16,11 +16,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
 
 
-        protected override void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context)
+        protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.TextBoxProxy";
-            helper.Members.Add(GeneratePropertyForProxy(context, type));
-            helper.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
 
     }

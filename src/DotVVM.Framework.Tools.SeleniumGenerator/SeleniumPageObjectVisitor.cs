@@ -10,20 +10,18 @@ using System.Linq;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
-    public class SeleniumHelperVisitor : ResolvedControlTreeVisitor
+    public class SeleniumPageObjectVisitor : ResolvedControlTreeVisitor
     {
-        private Stack<HelperDefinition> HelperDefinitionsStack { get; } = new Stack<HelperDefinition>();
-
-        //private List<string> DataContextStack { get; set; } = new List<string>();
+        private Stack<PageObjectDefinition> HelperDefinitionsStack { get; } = new Stack<PageObjectDefinition>();
 
         private static readonly Dictionary<Type, ISeleniumGenerator> generators = new Dictionary<Type, ISeleniumGenerator>()
         {
-            { typeof(TextBox), new TextBoxGenerator() },
-            { typeof(CheckBox), new CheckBoxGenerator() },
-            { typeof(Button), new ButtonGenerator() },
-            { typeof(Literal), new LiteralGenerator() },
-            { typeof(Repeater), new RepeaterGenerator() },
-            { typeof(ValidationSummary), new ValidationSummaryGenerator() },
+            { typeof(TextBox), new TextBoxControlGenerator() },
+            { typeof(CheckBox), new CheckBoxControlGenerator() },
+            { typeof(Button), new ButtonControlGenerator() },
+            { typeof(Literal), new LiteralControlGenerator() },
+            { typeof(Repeater), new RepeaterControlGenerator() },
+            { typeof(ValidationSummary), new ValidationSummaryControlGenerator() },
             { typeof(RadioButton), new RadioButtonControlGenerator()},
             { typeof(LinkButton), new LinkButtonControlGenerator()},
             { typeof(RouteLink), new RouteLinkControlGenerator()},
@@ -39,16 +37,15 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         }
 
 
-        public void PushScope(HelperDefinition definition)
+        public void PushScope(PageObjectDefinition definition)
         {
             HelperDefinitionsStack.Push(definition);
         }
 
-        public HelperDefinition PopScope()
+        public PageObjectDefinition PopScope()
         {
             return HelperDefinitionsStack.Pop();
         }
-
 
         // TODO: if dotcontrol - use dotvvmControlGenerator
         public override void VisitControl(ResolvedControl control)

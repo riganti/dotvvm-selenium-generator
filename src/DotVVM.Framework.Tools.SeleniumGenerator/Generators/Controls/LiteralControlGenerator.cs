@@ -5,7 +5,7 @@ using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class LiteralGenerator : SeleniumGenerator<Literal>
+    public class LiteralControlGenerator : SeleniumGenerator<Literal>
     {
         private static readonly DotvvmProperty[] nameProperties = new[] { Literal.TextProperty };
 
@@ -14,7 +14,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
 
 
-        public override bool CanAddDeclarations(HelperDefinition helperDefinition, SeleniumGeneratorContext context)
+        public override bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context)
         {
             if (context.Control.TryGetProperty(Literal.RenderSpanElementProperty, out var setter))
             {
@@ -24,14 +24,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 }
             }
 
-            return base.CanAddDeclarations(helperDefinition, context);
+            return base.CanAddDeclarations(pageObjectDefinition, context);
         }
 
-        protected override void AddDeclarationsCore(HelperDefinition helper, SeleniumGeneratorContext context)
+        protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.LiteralProxy";
-            helper.Members.Add(GeneratePropertyForProxy(context, type));
-            helper.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
 
     }
