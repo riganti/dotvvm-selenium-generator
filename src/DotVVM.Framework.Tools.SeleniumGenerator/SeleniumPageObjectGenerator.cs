@@ -122,12 +122,31 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private void UpdateMarkupFile(PageObjectDefinition pageObject, string viewPath)
         {
             var sb = new StringBuilder(File.ReadAllText(viewPath, Encoding.UTF8));
-            foreach (var modification in pageObject.MarkupFileModifications.OrderByDescending(m => m.Position))
-            {
-                modification.Apply(sb);
-            }
+
+            UpdateMarkupFile(pageObject, sb);
 
             File.WriteAllText(viewPath, sb.ToString(), Encoding.UTF8);
+        }
+
+        private void UpdateMarkupFile(PageObjectDefinition pageObject, StringBuilder stringBuilder)
+        {
+            var allModifications = GetAllModifications(pageObject);
+
+            foreach (var modification in allModifications.OrderByDescending(m => m.Position))
+            {
+                modification.Apply(stringBuilder);
+            }
+        }
+
+        private IEnumerable<MarkupFileModification> GetAllModifications(PageObjectDefinition pageObject)
+        {
+            var modifications = pageObject.MarkupFileModifications;
+            foreach (var child in pageObject.Children)
+            {
+                modifications.AddRange(GetAllModifications(child));
+            }
+
+            return modifications;
         }
 
         private void GenerateHelperClass(SeleniumGeneratorConfiguration seleniumConfiguration, PageObjectDefinition pageObject)
