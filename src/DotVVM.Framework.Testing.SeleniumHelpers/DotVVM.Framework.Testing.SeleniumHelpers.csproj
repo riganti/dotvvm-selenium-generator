@@ -4,7 +4,8 @@
     <RuntimeIdentifiers>win7-x64;win7-x86</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Selenium.WebDriver" Version="3.12.1" />
+    <PackageReference Include="Selenium.Support" Version="3.141.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dotvvm\src\DotVVM.Core\DotVVM.Core.csproj" />

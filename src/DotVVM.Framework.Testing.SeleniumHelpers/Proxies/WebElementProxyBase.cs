@@ -23,7 +23,5 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             var selector = Helper.BuildElementSelector(Selector);
             return Helper.WebDriver.FindElement(By.CssSelector(selector));
         }
-
     }
-    
 }

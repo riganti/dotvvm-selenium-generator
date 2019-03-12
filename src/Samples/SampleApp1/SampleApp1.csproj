@@ -29,6 +29,7 @@
         <None Remove="Views\MasterPages\PageB.dothtml" />
         <None Remove="Views\MasterPages\Site.dotmaster" />
         <None Remove="Views\SimplePage\Page.dothtml" />
+        <None Remove="Views\SimplePage\TestingPage.dothtml" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="wwwroot\" />

@@ -18,6 +18,5 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
             pageObject.Members.Add(GeneratePropertyForProxy(context, type));
             pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
-
     }
 }

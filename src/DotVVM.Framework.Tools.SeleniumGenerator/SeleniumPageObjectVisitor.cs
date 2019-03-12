@@ -25,6 +25,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(RadioButton), new RadioButtonControlGenerator()},
             { typeof(LinkButton), new LinkButtonControlGenerator()},
             { typeof(RouteLink), new RouteLinkControlGenerator()},
+            { typeof(ComboBox), new ComboBoxControlGenerator()},
+            { typeof(DataPager), new DataPagerControlGenerator()},
+            { typeof(GridView), new GridViewControlGenerator()},
+            { typeof(UpdateProgress), new UpdateProgressControlGenerator()},
+            { typeof(FileUpload), new FileUploadControlGenerator()},
+            { typeof(EmptyData), new EmptyDataControlGenerator()},
         };
 
         private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)

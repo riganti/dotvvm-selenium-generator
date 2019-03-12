@@ -16,6 +16,9 @@
             <dot:RouteLink RouteName="SimplePage_Page" Text="Simple Page" />
         </li>
         <li>
+            <dot:RouteLink RouteName="SimplePage_TestingPage" Text="Testing Page" />
+        </li>
+        <li>
             <dot:RouteLink RouteName="MasterPages_PageA" Text="Master Pages - Page A" />
         </li>
         <li>

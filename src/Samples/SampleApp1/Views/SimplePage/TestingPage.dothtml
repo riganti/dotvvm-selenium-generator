@@ -1,0 +1,44 @@
+﻿@viewModel SampleApp1.ViewModels.SimplePage.TestingPageViewModel, SampleApp1
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+
+        <h1>{{value: Title}}</h1>
+
+        <%--<dot:EmptyData DataSource="{value: Customers}">
+            <p>Empty</p>
+        </dot:EmptyData>--%>
+
+        <%--<dot:Button Text="Perform difficult calculation" Click="{command: CalculateIt()}"  UITests.Name="Performdifficultcalculation"/>
+
+        <p>{{value: Result}}</p>
+
+        <dot:UpdateProgress>
+            <h4>Calculating...</h4>
+        </dot:UpdateProgress>--%>
+
+        <dot:GridView DataSource="{value: Customers}" UITests.Name="Customers">
+            <Columns>
+                <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID" />
+                <dot:GridViewTextColumn ValueBinding="{value: Name}" HeaderText="Name" />
+            </Columns>
+        </dot:GridView>
+
+        <dot:DataPager DataSet="{value: Customers}" class="pager"  UITests.Name="Customers1"/>
+
+        <dot:ComboBox DataSource="{value: Customers.Items}"
+                      SelectedValue="{value: SelectedCustomer}"
+                      EmptyItemText="Vyberte..."
+                      ItemValueBinding="{value: Id}"
+                      ItemTextBinding="{value: Name}"  UITests.Name="SelectedCustomer"/>
+
+    </body>
+</html>
+
+
