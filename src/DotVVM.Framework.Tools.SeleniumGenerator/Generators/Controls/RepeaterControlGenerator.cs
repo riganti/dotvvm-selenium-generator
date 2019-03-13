@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DotVVM.Framework.Binding;
+﻿using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
@@ -11,24 +7,22 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
     public class RepeaterControlGenerator : SeleniumGenerator<Repeater>
     {
-        private static readonly DotvvmProperty[] nameProperties = new[] { ItemsControl.DataSourceProperty };
+        private static readonly DotvvmProperty[] nameProperties = { ItemsControl.DataSourceProperty };
 
         public override DotvvmProperty[] NameProperties => nameProperties;
 
         public override bool CanUseControlContentForName => false;
 
 
-
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            IAbstractPropertySetter itemTemplate;
-            if (context.Control.TryGetProperty(Repeater.ItemTemplateProperty, out itemTemplate))
+            if (context.Control.TryGetProperty(Repeater.ItemTemplateProperty, out var itemTemplate))
             {
                 var template = (ResolvedPropertyTemplate) itemTemplate;
 
                 // generate child helper class
                 var itemHelperName = context.UniqueName + "RepeaterHelper";
-                context.Visitor.PushScope(new PageObjectDefinition() { Name = itemHelperName });
+                context.Visitor.PushScope(new PageObjectDefinition { Name = itemHelperName });
                 context.Visitor.VisitPropertyTemplate(template);
                 pageObject.Children.Add(context.Visitor.PopScope());
 

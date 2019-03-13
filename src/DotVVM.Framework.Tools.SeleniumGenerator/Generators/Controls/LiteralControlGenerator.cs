@@ -1,5 +1,4 @@
 ﻿using DotVVM.Framework.Binding;
-using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
 
@@ -7,7 +6,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
     public class LiteralControlGenerator : SeleniumGenerator<Literal>
     {
-        private static readonly DotvvmProperty[] nameProperties = new[] { Literal.TextProperty };
+        private static readonly DotvvmProperty[] nameProperties = { Literal.TextProperty };
 
         public override DotvvmProperty[] NameProperties => nameProperties;
 

@@ -36,6 +36,7 @@ namespace SampleApp1
 		public void ConfigureServices(IDotvvmServiceCollection options)
         {
             options.AddDefaultTempStorages("temp");
+            options.AddUploadedFileStorage("App_Data/Temp");
 		}
     }
 }

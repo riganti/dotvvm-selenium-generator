@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 using OpenQA.Selenium;
 
 namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
@@ -22,6 +22,24 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         {
             var selector = Helper.BuildElementSelector(Selector);
             return Helper.WebDriver.FindElement(By.CssSelector(selector));
+        }
+
+        public virtual bool IsVisible()
+        {
+            try
+            {
+                return FindElement().Displayed;
+            }
+            catch (NoSuchElementException e)
+            {
+                Console.WriteLine(@"Element is not in page. " + e);
+                return false;
+            }
+        }
+
+        public virtual bool IsEnabled()
+        {
+            return FindElement().Enabled;
         }
     }
 }

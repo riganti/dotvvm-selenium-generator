@@ -1,5 +1,4 @@
-﻿using System;
-using DotVVM.Framework.Binding;
+﻿using DotVVM.Framework.Binding;
 using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
@@ -12,7 +11,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            throw new NotImplementedException();
+            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.UpdateProgressProxy";
+            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
     }
 }

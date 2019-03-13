@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using DotVVM.Framework.ViewModel;
@@ -42,8 +43,9 @@ namespace SampleApp1.ViewModels.SimplePage
 
     public class NameData
     {
+        [Required]
         public string FirstName { get; set; }
-
+        [Required]
         public string LastName { get; set; }
     }
 }

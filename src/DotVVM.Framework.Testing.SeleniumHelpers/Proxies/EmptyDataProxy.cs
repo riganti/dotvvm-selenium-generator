@@ -1,4 +1,7 @@
-﻿namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
+﻿using System;
+using OpenQA.Selenium;
+
+namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class EmptyDataProxy : WebElementProxyBase
     {
@@ -8,7 +11,15 @@
 
         public bool IsVisible()
         {
-            return FindElement().Displayed;
+            try
+            {
+                return FindElement().Displayed;
+            }
+            catch (NoSuchElementException e)
+            {
+                Console.WriteLine(@"EmptyData is not visible" + e);
+                return false;
+            }
         }
     }
 }

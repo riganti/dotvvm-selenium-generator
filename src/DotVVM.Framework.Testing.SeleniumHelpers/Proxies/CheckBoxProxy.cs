@@ -12,13 +12,20 @@
             return !string.IsNullOrEmpty(FindElement().GetAttribute("checked"));
         }
 
-        public void Check(bool isChecked)
+        public void Check()
         {
-            if (IsChecked() != isChecked)
+            if (!IsChecked())
             {
                 FindElement().Click();
             }
         }
 
+        public void Uncheck()
+        {
+            if (IsChecked())
+            {
+                FindElement().Click();
+            }
+        } 
     }
 }

@@ -21,10 +21,13 @@
         </p>
         <p DataContext="{value: Name}">
             First Name:
-            <dot:TextBox Text="{value: FirstName}"  UITests.Name="Name_FirstName"/>
+            <dot:TextBox Text="{value: FirstName}"  UITests.Name="Name_FirstName" Validator.Value="{value: FirstName}" />
             Last Name:
-            <dot:TextBox Text="{value: LastName}"  UITests.Name="Name_LastName"/>
+            <dot:TextBox Text="{value: LastName}"  UITests.Name="Name_LastName" Validator.Value="{value: LastName}" />
         </p>
+
+        <dot:Button Text="Click" Click="{command: null}" Validation.Target="{value: Name}" Validation.Enabled="true"  UITests.Name="Click"/>
+
         <p>
             Address:
             <dot:TextBox Text="{value: Address}"  UITests.Name="Address"/>
@@ -34,7 +37,7 @@
         </p>
         <p>
             Country Code:
-            <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}" />
+            <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}"  UITests.Name="CountryCode"/>
         </p>
         <p>
             <dot:Button Text="Create Company" Click="{command: CreateCompany()}"  UITests.Name="CreateCompany"/>
@@ -43,6 +46,8 @@
     </div>
 
     <dot:Literal Text="{value: StatusMessage}" UITests.Name="StatusMessage"/>
+
+    <dot:ValidationSummary IncludeErrorsFromChildren="true"  UITests.Name="ValidationSummary"/>
 
 
 </body>

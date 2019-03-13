@@ -15,6 +15,7 @@ namespace SampleApp1.ViewModels.SimplePage
         public TestingPageViewModel()
         {
             Title = "Hello from DotVVM!";
+            Files = new UploadedFilesCollection();
         }
 
         public void CalculateIt()
@@ -25,6 +26,8 @@ namespace SampleApp1.ViewModels.SimplePage
             var random = new Random(DateTime.Now.Millisecond);
             Result = random.Next();
         }
+
+        public UploadedFilesCollection Files { get; set; }
 
         public GridViewDataSet<CustomerDTO> Customers { get; set; } = new GridViewDataSet<CustomerDTO>
         {

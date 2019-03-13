@@ -14,7 +14,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            throw new NotImplementedException();
+            const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.EmptyDataProxy";
+            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
     }
 }

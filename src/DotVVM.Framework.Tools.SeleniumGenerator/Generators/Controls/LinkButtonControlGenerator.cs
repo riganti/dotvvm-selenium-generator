@@ -9,7 +9,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.LinkButtonProxy";
+            const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.LinkButtonProxy";
             pageObject.Members.Add(GeneratePropertyForProxy(context, type));
             pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }

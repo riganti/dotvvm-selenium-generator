@@ -1,4 +1,6 @@
-﻿namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
+﻿using OpenQA.Selenium;
+
+namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class RadioButtonProxy : WebElementProxyBase
     {
@@ -8,7 +10,10 @@
 
         public bool IsSelected()
         {
-            return FindElement().Selected;
+            var element = FindElement();
+            var inputElement = element.FindElement(By.TagName("input"));
+
+            return inputElement.Selected;
         }
 
         public void Select()

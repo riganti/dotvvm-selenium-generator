@@ -1,4 +1,6 @@
-﻿namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
+﻿using OpenQA.Selenium.Interactions;
+
+namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class LinkButtonProxy : ButtonProxy
     {
