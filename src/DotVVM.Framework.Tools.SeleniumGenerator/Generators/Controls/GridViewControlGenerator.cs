@@ -1,4 +1,5 @@
 ﻿using DotVVM.Framework.Binding;
+using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
@@ -13,9 +14,21 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.GridViewProxy";
-            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            if (context.Control.TryGetProperty(GridView.ColumnsProperty, out var columnsTemplate))
+            {
+                var template = (ResolvedPropertyControlCollection) columnsTemplate;
+
+                // generate child helper class
+                var itemHelperName = context.UniqueName + "GridViewPageObject";
+                context.Visitor.PushScope(new PageObjectDefinition { Name = itemHelperName });
+                context.Visitor.VisitPropertyControlCollection(template);
+                pageObject.Children.Add(context.Visitor.PopScope());
+
+                // generate proxy
+                const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.GridViewProxy";
+                pageObject.Members.Add(GeneratePropertyForProxy(context, type));
+                pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            }
         }
     }
 }

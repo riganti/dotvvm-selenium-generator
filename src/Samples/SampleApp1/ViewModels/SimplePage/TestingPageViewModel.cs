@@ -39,7 +39,7 @@ namespace SampleApp1.ViewModels.SimplePage
                 new CustomerDTO{ Id = 4, Name = "Polc"},
                 new CustomerDTO{ Id = 5, Name = "Popo"},
                 new CustomerDTO{ Id = 6, Name = "CCC"},
-                new CustomerDTO{ Id = 7, Name = "Apoh"},
+                new CustomerDTO{ Id = 7, Name = "Zdar"},
                 new CustomerDTO{ Id = 8, Name = "CACa"},
             },
             PagingOptions = { PageSize = 3, TotalItemsCount = 8 }

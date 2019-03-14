@@ -13,7 +13,7 @@ using System.Text;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
-    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator where TControl : DotvvmControl
+    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator /*where TControl : DotvvmControl*/
     {
 
         /// <summary>

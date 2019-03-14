@@ -14,7 +14,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.ButtonProxy";
+            const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.ButtonProxy";
             pageObject.Members.Add(GeneratePropertyForProxy(context, type));
             pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }

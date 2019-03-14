@@ -7,6 +7,7 @@ using DotVVM.Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewControls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -31,6 +32,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(UpdateProgress), new UpdateProgressControlGenerator()},
             { typeof(FileUpload), new FileUploadControlGenerator()},
             { typeof(EmptyData), new EmptyDataControlGenerator()},
+            { typeof(GridViewTextColumn), new GridViewTextColumnControlGenerator()},
         };
 
         private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)
