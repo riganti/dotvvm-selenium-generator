@@ -33,6 +33,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(FileUpload), new FileUploadControlGenerator()},
             { typeof(EmptyData), new EmptyDataControlGenerator()},
             { typeof(GridViewTextColumn), new GridViewTextColumnControlGenerator()},
+            { typeof(GridViewCheckBoxColumn), new GridViewCheckBoxColumnControlGenerator()},
+            //{ typeof(GridViewTemplateColumn), new GridViewTemplateColumnControlGenerator()},
         };
 
         private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)

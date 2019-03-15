@@ -25,9 +25,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate proxy
-                const string type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.GridViewProxy";
-                pageObject.Members.Add(GeneratePropertyForProxy(context, type));
-                pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+                var type = $"{DefaultNamespace}.GridViewProxy";
+                AddGenericPageObjectProperties(pageObject, context, type, itemHelperName);
             }
         }
     }

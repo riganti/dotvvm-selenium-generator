@@ -15,6 +15,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
     public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator /*where TControl : DotvvmControl*/
     {
+        protected const string DefaultNamespace = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies";
 
         /// <summary>
         /// Gets a list of properties that can be used to determine the control name.
@@ -250,6 +251,20 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return text;
         }
 
+        protected void AddPageObjectProperties(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
+        {
+            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+        }
+
+        protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject, 
+            SeleniumGeneratorContext context,
+            string type, 
+            string itemHelperName)
+        {
+            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type, itemHelperName));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
+        }
 
         private static TypeSyntax ParseTypeName(string typeName, params string[] genericTypeNames)
         {
@@ -266,12 +281,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             }
         }
 
-
-        protected MemberDeclarationSyntax GeneratePropertyForProxy(SeleniumGeneratorContext context, string typeName, params string[] genericTypeNames)
+        protected MemberDeclarationSyntax GeneratePropertyForProxy(string uniqueName, string typeName, params string[] genericTypeNames)
         {
             return SyntaxFactory.PropertyDeclaration(
                     ParseTypeName(typeName, genericTypeNames),
-                    context.UniqueName
+                    uniqueName
                 )
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
                 .AddAccessorListAccessors(

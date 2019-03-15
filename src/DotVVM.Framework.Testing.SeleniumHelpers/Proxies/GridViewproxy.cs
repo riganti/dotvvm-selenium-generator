@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using OpenQA.Selenium;
 
 namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
-    public class GridViewProxy : WebElementProxyBase
+    public class GridViewProxy<TItemHelper> : WebElementProxyBase where TItemHelper : SeleniumHelperBase
     {
         public GridViewProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
         {
@@ -42,6 +43,13 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             var columnsHeaders = header.FindElements(By.XPath("//tr/th"));
 
             return columnsHeaders.Count;
+        }
+
+        public TItemHelper GetItem(int index)
+        {
+            var selector = $"{Helper.BuildElementSelector(Selector)} > tbody >*:nth-child({index + 1})";
+
+            return (TItemHelper)Activator.CreateInstance(typeof(TItemHelper), Helper.WebDriver, Helper, selector);
         }
 
         //public IList<IWebElement> GetTableCellsByValue(string value)

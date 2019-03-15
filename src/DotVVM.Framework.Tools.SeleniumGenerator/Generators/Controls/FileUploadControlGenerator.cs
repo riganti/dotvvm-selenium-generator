@@ -11,9 +11,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => false;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies.FileUploadProxy";
-            pageObject.Members.Add(GeneratePropertyForProxy(context, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            var type = $"{DefaultNamespace}.FileUploadProxy";
+            AddPageObjectProperties(pageObject, context, type);
         }
     }
 }
