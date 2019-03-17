@@ -14,18 +14,18 @@
     <fieldset>
         <legend>Control A</legend>
 
-        <cc:ControlA />
+        <cc:ControlA  UITests.Name="ControlA"/>
     </fieldset>
 
     <fieldset>
         <legend>Control B</legend>
 
-        <dot:Repeater DataSource="{value: Sections}">
-            <cc:ControlB />
+        <dot:Repeater DataSource="{value: Sections}" UITests.Name="Sections">
+            <cc:ControlB  UITests.Name="ControlB"/>
         </dot:Repeater>
 
         <p>
-            <dot:Button Text="Add Control B" Click="{command: AddControlB()}" />
+            <dot:Button Text="Add Control B" Click="{command: AddControlB()}"  UITests.Name="AddControlB"/>
         </p>
     </fieldset>
 

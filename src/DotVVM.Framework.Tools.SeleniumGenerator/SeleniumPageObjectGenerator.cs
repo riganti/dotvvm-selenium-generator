@@ -24,19 +24,21 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             // resolve control tree
             var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath, dotvvmConfiguration);
 
-            // TODO: resolve unique names in master pages
+            // resolve master pages of current page
             var masterPageObjectDefinitions = ResolveMasterPages(dotvvmConfiguration, seleniumConfiguration, viewTree);
-
             var masterUsedUniqueNames = masterPageObjectDefinitions.SelectMany(m => m.UsedNames).ToHashSet();
-            // var helper
-            var helper = CreatePageObjectDefinition(seleniumConfiguration, viewTree, masterUsedUniqueNames);
-            helper = CombineViewHelperDefinitions(helper, masterPageObjectDefinitions);
+            
+            // create page object
+            var pageObject = CreatePageObjectDefinition(seleniumConfiguration, viewTree, masterUsedUniqueNames);
+
+            // combine all master page objects with current page object
+            pageObject = CombineViewHelperDefinitions(pageObject, masterPageObjectDefinitions);
 
             // generate the class
-            GenerateHelperClass(seleniumConfiguration, helper);
+            GeneratePageObjectClass(seleniumConfiguration, pageObject);
 
             // update view markup file
-            UpdateMarkupFile(helper, seleniumConfiguration.ViewFullPath);
+            UpdateMarkupFile(pageObject, seleniumConfiguration.ViewFullPath);
         }
 
         private PageObjectDefinition CombineViewHelperDefinitions(PageObjectDefinition pageObject,
@@ -149,7 +151,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             return modifications;
         }
 
-        private void GenerateHelperClass(SeleniumGeneratorConfiguration seleniumConfiguration, PageObjectDefinition pageObject)
+        private void GeneratePageObjectClass(SeleniumGeneratorConfiguration seleniumConfiguration, PageObjectDefinition pageObject)
         {
             var tree = CSharpSyntaxTree.Create(
                 SyntaxFactory.CompilationUnit().WithMembers(SyntaxFactory.List(new MemberDeclarationSyntax[]

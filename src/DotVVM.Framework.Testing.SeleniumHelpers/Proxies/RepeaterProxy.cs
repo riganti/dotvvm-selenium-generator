@@ -21,6 +21,5 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
             return (TItemHelper) Activator.CreateInstance(typeof(TItemHelper), Helper.WebDriver, Helper, selector);
         }
-        
     }
 }

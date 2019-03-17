@@ -7,6 +7,7 @@ using DotVVM.Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewControls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -22,15 +23,19 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(Literal), new LiteralControlGenerator() },
             { typeof(Repeater), new RepeaterControlGenerator() },
             { typeof(ValidationSummary), new ValidationSummaryControlGenerator() },
-            { typeof(RadioButton), new RadioButtonControlGenerator()},
-            { typeof(LinkButton), new LinkButtonControlGenerator()},
-            { typeof(RouteLink), new RouteLinkControlGenerator()},
-            { typeof(ComboBox), new ComboBoxControlGenerator()},
-            { typeof(DataPager), new DataPagerControlGenerator()},
-            { typeof(GridView), new GridViewControlGenerator()},
-            { typeof(UpdateProgress), new UpdateProgressControlGenerator()},
-            { typeof(FileUpload), new FileUploadControlGenerator()},
-            { typeof(EmptyData), new EmptyDataControlGenerator()},
+            { typeof(RadioButton), new RadioButtonControlGenerator() },
+            { typeof(LinkButton), new LinkButtonControlGenerator() },
+            { typeof(RouteLink), new RouteLinkControlGenerator() },
+            { typeof(ComboBox), new ComboBoxControlGenerator() },
+            { typeof(DataPager), new DataPagerControlGenerator() },
+            { typeof(GridView), new GridViewControlGenerator() },
+            { typeof(UpdateProgress), new UpdateProgressControlGenerator() },
+            { typeof(FileUpload), new FileUploadControlGenerator() },
+            { typeof(EmptyData), new EmptyDataControlGenerator() },
+            { typeof(GridViewTextColumn), new GridViewTextColumnControlGenerator() },
+            { typeof(GridViewCheckBoxColumn), new GridViewCheckBoxColumnControlGenerator() },
+            { typeof(GridViewTemplateColumn), new GridViewTemplateColumnControlGenerator() },
+            { typeof(HtmlGenericControl), new DotvvmControlGenerator() },
         };
 
         private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)

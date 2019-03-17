@@ -27,8 +27,14 @@
 
         <dot:GridView DataSource="{value: Customers}" UITests.Name="Customers1">
             <Columns>
-                <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID" />
-                <dot:GridViewTextColumn ValueBinding="{value: Name}" HeaderText="Name" />
+                <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID"  UITests.Name="Id"/>
+                <dot:GridViewTextColumn ValueBinding="{value: Name}" HeaderText="Name"  UITests.Name="Name"/>
+                <dot:GridViewTemplateColumn HeaderText="PostalCode" UITests.Name="PostalCode">
+                    <ContentTemplate>
+                        <dot:TextBox Text="{value: PostalCode}"  UITests.Name="PostalCode"/>
+                    </ContentTemplate>
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewCheckBoxColumn ValueBinding="{value: IsChecked}" HeaderText="IsChecked"  UITests.Name="IsChecked"/>
             </Columns>
         </dot:GridView>
 

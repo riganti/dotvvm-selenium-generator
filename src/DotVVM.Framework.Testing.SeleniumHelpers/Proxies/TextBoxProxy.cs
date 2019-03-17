@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
+﻿namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class TextBoxProxy : WebElementProxyBase
     {
@@ -14,7 +8,8 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
         public string GetText()
         {
-            return FindElement().Text;
+            // Text property returns empty string
+            return FindElement().GetAttribute("value");
         }
 
         public void SetText(string text)

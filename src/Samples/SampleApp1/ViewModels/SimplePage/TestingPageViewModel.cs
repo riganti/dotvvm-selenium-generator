@@ -33,14 +33,14 @@ namespace SampleApp1.ViewModels.SimplePage
         {
             Items = new List<CustomerDTO>
             {
-                new CustomerDTO{ Id = 1, Name = "Ahoj"},
+                new CustomerDTO{ Id = 1, Name = "Ahoj", IsChecked = true},
                 new CustomerDTO{ Id = 2, Name = "Cus"},
                 new CustomerDTO{ Id = 3, Name = "Zdar"},
-                new CustomerDTO{ Id = 4, Name = "Polc"},
+                new CustomerDTO{ Id = 4, Name = "Polc", IsChecked = true},
                 new CustomerDTO{ Id = 5, Name = "Popo"},
                 new CustomerDTO{ Id = 6, Name = "CCC"},
-                new CustomerDTO{ Id = 7, Name = "Apoh"},
-                new CustomerDTO{ Id = 8, Name = "CACa"},
+                new CustomerDTO{ Id = 7, Name = "Zdar"},
+                new CustomerDTO{ Id = 8, Name = "CACa", IsChecked = true},
             },
             PagingOptions = { PageSize = 3, TotalItemsCount = 8 }
 
@@ -51,8 +51,9 @@ namespace SampleApp1.ViewModels.SimplePage
     public class CustomerDTO
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
+        public string PostalCode { get; set; }
+
+        public bool IsChecked { get; set; }
     }
 }
-

@@ -10,11 +10,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
-    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator where TControl : DotvvmControl
+    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator /*where TControl : DotvvmControl*/
     {
+        protected const string DefaultNamespace = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies";
 
         /// <summary>
         /// Gets a list of properties that can be used to determine the control name.
@@ -72,7 +74,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return propertyName;
         }
 
-        public virtual bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context)
+        public virtual bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             return true;
         }
@@ -95,7 +97,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             var uniqueName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
 
             // if selector is set, just read it and don't add data context prefixes
-            var shouldAddDataContextPrefixes = uniqueName == null;
+            //var shouldAddDataContextPrefixes = uniqueName == null;
+            var shouldAddDataContextPrefixes = false;
 
             // if not found, use the name properties to determine the name
             if (uniqueName == null)
@@ -117,21 +120,30 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 uniqueName = GetTextFromContent(context.Control.Content);
             }
 
+            // check if control is userControl and assign control's name as unique name
+            if (uniqueName == null && context.Control.DothtmlNode is DothtmlElementNode htmlNode)
+            {
+                uniqueName = htmlNode.TagName;
+                
+                // not add dataContext when generating page object for user control
+                shouldAddDataContextPrefixes = false;   
+            }
+
             // if not found, use control name
             if (uniqueName == null)
             {
                 uniqueName = typeof(TControl).Name;
             }
 
-            if (shouldAddDataContextPrefixes)
-            {
-                uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
-            }
+            //if (shouldAddDataContextPrefixes)
+            //{
+            //    uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
+            //}
 
             return uniqueName;
         }
 
-        private string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
+        protected string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
         {
             if(dataContextPrefixes.Any())
             {
@@ -185,17 +197,17 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         protected string TryGetNameFromProperty(ResolvedControl control, DotvvmProperty property)
         {
-            IAbstractPropertySetter setter;
-            if (control.TryGetProperty(property, out setter))
+            if (control.TryGetProperty(property, out IAbstractPropertySetter setter))
             {
-                if (setter is ResolvedPropertyValue)
+                switch (setter)
                 {
-                    return RemoveNonIdentifierCharacters(((ResolvedPropertyValue)setter).Value?.ToString());
-                }
-                else if (setter is ResolvedPropertyBinding)
-                {
-                    var binding = ((ResolvedPropertyBinding)setter).Binding;
-                    return RemoveNonIdentifierCharacters(binding.Value);
+                    case ResolvedPropertyValue propertySetter:
+                        return RemoveNonIdentifierCharacters(propertySetter.Value?.ToString());
+
+                    case ResolvedPropertyBinding propertyBinding:
+                    {
+                        return RemoveNonIdentifierCharacters(propertyBinding.Binding.Value);
+                    }
                 }
             }
             return null;
@@ -205,7 +217,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         {
             var sb = new StringBuilder();
 
-            for (int i = 0; i < value.Length; i++)
+            for (var i = 0; i < value.Length; i++)
             {
                 if (char.IsLetterOrDigit(value[i]) || value[i] == '_')
                 {
@@ -217,7 +229,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 return null;
             }
-            else if (char.IsDigit(sb[0]))
+
+            if (char.IsDigit(sb[0]))
             {
                 sb.Insert(0, '_');
             }
@@ -250,6 +263,20 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return text;
         }
 
+        protected void AddPageObjectProperties(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
+        {
+            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+        }
+
+        protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject, 
+            SeleniumGeneratorContext context,
+            string type, 
+            string itemHelperName)
+        {
+            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type, itemHelperName));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
+        }
 
         private static TypeSyntax ParseTypeName(string typeName, params string[] genericTypeNames)
         {
@@ -266,12 +293,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             }
         }
 
-
-        protected MemberDeclarationSyntax GeneratePropertyForProxy(SeleniumGeneratorContext context, string typeName, params string[] genericTypeNames)
+        protected MemberDeclarationSyntax GeneratePropertyForProxy(string uniqueName, string typeName, params string[] genericTypeNames)
         {
             return SyntaxFactory.PropertyDeclaration(
                     ParseTypeName(typeName, genericTypeNames),
-                    context.UniqueName
+                    uniqueName
                 )
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
                 .AddAccessorListAccessors(
@@ -294,6 +320,23 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                                 SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(context.Selector)))
                             }))
                         )
+                )
+            );
+        }
+
+        // TODO: decide if proxy should be generated or using property like this
+        protected StatementSyntax GenerateInitializerForTemplate(string propertyName, string typeName)
+        {
+            return SyntaxFactory.ExpressionStatement(
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    SyntaxFactory.IdentifierName(propertyName),
+                    SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeName))
+                        .WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+                        {
+                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
+                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentHelper"))
+                        })))
                 )
             );
         }
