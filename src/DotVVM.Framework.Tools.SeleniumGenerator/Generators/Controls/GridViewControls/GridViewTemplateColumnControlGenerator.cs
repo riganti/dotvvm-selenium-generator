@@ -1,6 +1,7 @@
 ﻿using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
+using DotVVM.Framework.Tools.SeleniumGenerator.Helpers;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewControls
 {
@@ -23,8 +24,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewC
                 // generate property
                 var type = $"{DefaultNamespace}.GridViewColumns.GridViewTemplateColumnProxy";
 
-                pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, itemHelperName));
-                pageObject.ConstructorStatements.Add(GenerateInitializerForTemplate(context.UniqueName, itemHelperName));
+                context.Member.MemberDeclaration = GeneratePropertyForProxy(context.UniqueName, itemHelperName);
+                context.Member.ConstructorStatement = RoslynGeneratingHelper
+                    .GenerateInitializerForTemplate(context.UniqueName, itemHelperName);
             }
         }
     }

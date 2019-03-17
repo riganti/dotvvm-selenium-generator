@@ -10,6 +10,7 @@ using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
 using DotVVM.Framework.Configuration;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
+using DotVVM.Framework.Tools.SeleniumGenerator.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,6 +32,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             // create page object
             var pageObject = CreatePageObjectDefinition(seleniumConfiguration, viewTree, masterUsedUniqueNames);
 
+            ResolveNonUniqueModifications(pageObject);
+            UnionDeclarationsFromMembers(pageObject);
+
             // combine all master page objects with current page object
             pageObject = CombineViewHelperDefinitions(pageObject, masterPageObjectDefinitions);
 
@@ -41,15 +45,66 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             UpdateMarkupFile(pageObject, seleniumConfiguration.ViewFullPath);
         }
 
+        private void UnionDeclarationsFromMembers(PageObjectDefinition pageObject)
+        {
+            pageObject.MarkupFileModifications = new List<MarkupFileModification>(pageObject.Members
+                .Select(m => m.MarkupFileModification)
+                .Where(b => b != null));
+            pageObject.ConstructorStatements = new List<StatementSyntax>(pageObject.Members
+                .Select(m => m.ConstructorStatement)
+                .Where(b => b != null));
+            pageObject.MemberDeclarations = new List<MemberDeclarationSyntax>(pageObject.Members
+                .Select(m => m.MemberDeclaration)
+                .Where(b => b != null));
+        }
+
+        private void ResolveNonUniqueModifications(PageObjectDefinition pageObject)
+        {
+            var duplicates = pageObject.Members.GroupBy(m => m.Selector).Where(g => g.Count() > 1).ToList();
+            if (duplicates.Any())
+            {
+                foreach (var duplicate in duplicates)
+                {
+                    var itemsWithModification = duplicate.Where(d => d.MarkupFileModification != null);
+                    foreach (var item in itemsWithModification)
+                    {
+                        var uniqueSelector = GetUniqueSelector(pageObject.UsedSelectors, item.Selector);
+                        item.Selector = uniqueSelector;
+                        ((MarkupFileInsertText) item.MarkupFileModification).Selector = uniqueSelector;
+                        item.ConstructorStatement = RoslynGeneratingHelper
+                            .GenerateInitializerForProxy(uniqueSelector, item.Name, item.MemberType, item.GenericTypeNames);
+
+                        pageObject.UsedSelectors.Add(uniqueSelector);
+                    }
+                }
+            }
+        }
+
+        private string GetUniqueSelector(ICollection<string> selectors, string selector)
+        {
+            if (selectors.Contains(selector))
+            {
+                var index = 1;
+                while (selectors.Contains(selector + index))
+                {
+                    index++;
+                }
+
+                selector += index;
+            }
+
+            return selector;
+        }
+
         private PageObjectDefinition CombineViewHelperDefinitions(PageObjectDefinition pageObject,
             ICollection<MasterPageObjectDefinition> masterPageObjects)
         {
             if (masterPageObjects.Any())
             {
-                var masterMembers = masterPageObjects.SelectMany(m => m.Members);
+                var masterMembers = masterPageObjects.SelectMany(m => m.MemberDeclarations);
                 var constructorExpressions = masterPageObjects.SelectMany(m => m.ConstructorStatements);
 
-                pageObject.Members.AddRange(masterMembers);
+                pageObject.MemberDeclarations.AddRange(masterMembers);
                 pageObject.ConstructorStatements.AddRange(constructorExpressions);
             }
 
@@ -105,12 +160,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private MasterPageObjectDefinition MapPageObjectDefinition(PageObjectDefinition definition, IAbstractDirective masterPageFile)
         {
             var masterDefinition = new MasterPageObjectDefinition();
-            masterDefinition.Members.AddRange(definition.Members);
+            masterDefinition.MemberDeclarations.AddRange(definition.MemberDeclarations);
             masterDefinition.MarkupFileModifications.AddRange(definition.MarkupFileModifications);
             masterDefinition.ConstructorStatements.AddRange(definition.ConstructorStatements);
             masterDefinition.DataContextPrefixes.AddRange(definition.DataContextPrefixes);
             masterDefinition.Children.AddRange(definition.Children);
             masterDefinition.UsedNames.UnionWith(definition.UsedNames);
+            masterDefinition.UsedSelectors.UnionWith(definition.UsedSelectors);
+
             masterDefinition.MasterPageFullPath = masterPageFile.Value;
 
             return masterDefinition;
@@ -199,7 +256,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 .ClassDeclaration(pageObjectDefinition.Name)
                 .WithModifiers(GetClassModifiers())
                 .WithBaseList(GetBaseTypeDeclaration())
-                .WithMembers(SyntaxFactory.List(pageObjectDefinition.Members))
+                .WithMembers(SyntaxFactory.List(pageObjectDefinition.MemberDeclarations))
                 .AddMembers(GetConstructor(pageObjectDefinition))
                 .AddMembers(pageObjectDefinition.Children.Select(GenerateHelperClassContents).ToArray());
         }
@@ -231,8 +288,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private static ConstructorInitializerSyntax GetBaseConstructorParameters()
         {
-            return SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
-                                {
+            return SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, 
+                SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+                    {
                         SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
                         SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentHelper")),
                         SyntaxFactory.Argument(SyntaxFactory.IdentifierName("selectorPrefix"))

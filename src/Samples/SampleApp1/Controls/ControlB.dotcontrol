@@ -1,7 +1,7 @@
 ﻿@viewModel SampleApp1.Models.CounterSectionDTO, SampleApp1
 @baseType SampleApp1.Controls.ControlB, SampleApp1
 
-<dot:Literal Text="{value: Name}"  UITests.Name="Name"/>
+<dot:Literal Text="{value: Name}"  UITests.Name="Name" UITests.Name="Name1"/>
 <span DataContext="{value: Counter}">
-    <cc:Counter  UITests.Name="Counter"/>
+    <cc:Counter  UITests.Name="Counter" UITests.Name="Counter1"/>
 </span>

@@ -81,18 +81,28 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 {
                     Control = control,
                     UsedNames = helperDefinition.UsedNames,
-                    Visitor = this
+                    Visitor = this,
+                    Member = new MemberDefinition()
                 };
 
                 if (generator.CanAddDeclarations(helperDefinition, context))
                 {
                     generator.AddDeclarations(helperDefinition, context);
+
+                    helperDefinition.Members.Add(context.Member);
+
+                    RemoveDataContextPrefix(dataContextNameSet, helperDefinition);
                     return;
                 }
             }
 
             base.VisitControl(control);
 
+            RemoveDataContextPrefix(dataContextNameSet, helperDefinition);
+        }
+
+        private void RemoveDataContextPrefix(bool dataContextNameSet, PageObjectDefinition helperDefinition)
+        {
             if (dataContextNameSet)
             {
                 helperDefinition.DataContextPrefixes.RemoveAt(helperDefinition.DataContextPrefixes.Count - 1);

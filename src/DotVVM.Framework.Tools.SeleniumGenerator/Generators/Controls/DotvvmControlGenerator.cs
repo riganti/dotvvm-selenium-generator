@@ -1,6 +1,7 @@
 ﻿using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 using DotVVM.Framework.Controls;
+using DotVVM.Framework.Tools.SeleniumGenerator.Helpers;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
@@ -21,8 +22,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         {
             var type = $"{context.UniqueName}PageObject";
 
-            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForTemplate(context.UniqueName, type));
+            pageObject.MemberDeclarations.Add(GeneratePropertyForProxy(context.UniqueName, type));
+            pageObject.ConstructorStatements.Add(RoslynGeneratingHelper.GenerateInitializerForTemplate(context.UniqueName, type));
         }
     }
 }

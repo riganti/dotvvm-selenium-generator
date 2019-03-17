@@ -8,20 +8,17 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         public string Name { get; set; }
 
         public List<string> DataContextPrefixes { get; set; } = new List<string>();
-
         public HashSet<string> UsedNames { get; } = new HashSet<string>();
+        public HashSet<string> UsedSelectors { get; } = new HashSet<string>();
 
-        public List<MemberDeclarationSyntax> Members { get; } = new List<MemberDeclarationSyntax>();
+        public List<MemberDeclarationSyntax> MemberDeclarations { get; set; } = new List<MemberDeclarationSyntax>();
 
-        public List<StatementSyntax> ConstructorStatements { get; } = new List<StatementSyntax>();
+        public List<StatementSyntax> ConstructorStatements { get; set; } = new List<StatementSyntax>();
 
         public List<PageObjectDefinition> Children { get; } = new List<PageObjectDefinition>();
 
-        public List<MarkupFileModification> MarkupFileModifications { get; } = new List<MarkupFileModification>();
-    }
+        public List<MarkupFileModification> MarkupFileModifications { get; set; } = new List<MarkupFileModification>();
 
-    public class MasterPageObjectDefinition : PageObjectDefinition
-    {
-        public string MasterPageFullPath { get; set; }
+        public List<MemberDefinition> Members { get; set; } = new List<MemberDefinition>();
     }
 }

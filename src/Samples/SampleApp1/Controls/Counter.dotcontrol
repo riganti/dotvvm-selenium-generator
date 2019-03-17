@@ -1,4 +1,4 @@
 ﻿@viewModel SampleApp1.Models.CounterDTO, SampleApp1
 
-<dot:Literal Text="{value: Count}"  UITests.Name="Count"/>
-<dot:Button Text="Increment" Click="{staticCommand: Count = Count + 1}"  UITests.Name="Increment"/>
+<dot:Literal Text="{value: Count}"  UITests.Name="Count" UITests.Name="Count1"/>
+<dot:Button Text="Increment" Click="{staticCommand: Count = Count + 1}"  UITests.Name="Increment" UITests.Name="Increment1"/>

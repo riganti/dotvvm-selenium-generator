@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
+using DotVVM.Framework.Tools.SeleniumGenerator.Helpers;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
@@ -44,6 +45,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
             context.UsedNames.Add(uniqueName);
             context.UniqueName = uniqueName;
+            context.Member.Name = uniqueName;
 
             // determine the selector
             var selector = TryGetNameFromProperty(context.Control, UITests.NameProperty);
@@ -51,14 +53,19 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 selector = uniqueName;
 
+                // add modification
                 AddUITestNameProperty(pageObject, context, uniqueName);
             }
-            context.Selector = selector;
 
+            context.Selector = selector;
+            context.Member.Selector = selector;
+            pageObject.UsedSelectors.Add(selector);
+
+            // add constructor and member expressions
             AddDeclarationsCore(pageObject, context);
         }
 
-        private static string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
+        private string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
         {
             if (context.UsedNames.Contains(propertyName))
             {
@@ -84,11 +91,13 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             // find end of the tag
             var token = context.Control.DothtmlNode.Tokens.First(t => t.Type == DothtmlTokenType.CloseTag || t.Type == DothtmlTokenType.Slash);
 
-            pageObject.MarkupFileModifications.Add(new MarkupFileInsertText()
+            var modification = new MarkupFileInsertText()
             {
-                Text = " UITests.Name=\"" + uniqueName + "\"",
+                Selector = uniqueName,
                 Position = token.StartPosition
-            });
+            };
+
+            context.Member.MarkupFileModification = modification;
         }
 
         protected virtual string DetermineName(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
@@ -98,7 +107,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
             // if selector is set, just read it and don't add data context prefixes
             //var shouldAddDataContextPrefixes = uniqueName == null;
-            var shouldAddDataContextPrefixes = false;
+            //var shouldAddDataContextPrefixes = false;
 
             // if not found, use the name properties to determine the name
             if (uniqueName == null)
@@ -126,7 +135,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 uniqueName = htmlNode.TagName;
                 
                 // not add dataContext when generating page object for user control
-                shouldAddDataContextPrefixes = false;   
+                //shouldAddDataContextPrefixes = false;   
             }
 
             // if not found, use control name
@@ -265,8 +274,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         protected void AddPageObjectProperties(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
         {
-            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            var member = RoslynGeneratingHelper.GeneratePropertyForProxy(context.UniqueName, type);
+            var constructorStatement = RoslynGeneratingHelper
+                .GenerateInitializerForProxy(context.Selector, context.UniqueName, type);
+
+            context.Member.MemberDeclaration = member;
+            context.Member.ConstructorStatement = constructorStatement;
         }
 
         protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject, 
@@ -274,74 +287,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             string type, 
             string itemHelperName)
         {
-            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type, itemHelperName));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
-        }
+            var member = RoslynGeneratingHelper.GeneratePropertyForProxy(context.UniqueName, type, itemHelperName);
+            var constructorStatement = RoslynGeneratingHelper
+                .GenerateInitializerForProxy(context.Selector, context.UniqueName, type, itemHelperName);
 
-        private static TypeSyntax ParseTypeName(string typeName, params string[] genericTypeNames)
-        {
-            if (genericTypeNames.Length == 0)
-            {
-                return SyntaxFactory.ParseTypeName(typeName);
-            }
-            else
-            {
-                return SyntaxFactory.GenericName(typeName)
-                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(
-                            genericTypeNames.Select(n => SyntaxFactory.ParseTypeName(n)))
-                    ));
-            }
-        }
-
-        protected MemberDeclarationSyntax GeneratePropertyForProxy(string uniqueName, string typeName, params string[] genericTypeNames)
-        {
-            return SyntaxFactory.PropertyDeclaration(
-                    ParseTypeName(typeName, genericTypeNames),
-                    uniqueName
-                )
-                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
-                .AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                );
-        }
-
-        protected StatementSyntax GenerateInitializerForProxy(SeleniumGeneratorContext context, string propertyName, string typeName, params string[] genericTypeNames)
-        {
-            return SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(propertyName),
-                    SyntaxFactory.ObjectCreationExpression(ParseTypeName(typeName, genericTypeNames))
-                        .WithArgumentList(
-                            SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
-                            {
-                                SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(context.Selector)))
-                            }))
-                        )
-                )
-            );
-        }
-
-        // TODO: decide if proxy should be generated or using property like this
-        protected StatementSyntax GenerateInitializerForTemplate(string propertyName, string typeName)
-        {
-            return SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(propertyName),
-                    SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeName))
-                        .WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
-                        {
-                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
-                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentHelper"))
-                        })))
-                )
-            );
+            context.Member.MemberDeclaration = member;
+            context.Member.ConstructorStatement = constructorStatement;
         }
 
         protected abstract void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context);
-
     }
 }

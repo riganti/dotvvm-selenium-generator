@@ -14,5 +14,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         public HashSet<string> UsedNames { get; set; }
 
         public SeleniumPageObjectVisitor Visitor { get; set; }
+
+        public MemberDefinition Member { get; set; }
     }
 }

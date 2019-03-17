@@ -1,4 +1,5 @@
-﻿using DotVVM.Framework.Binding;
+﻿using System.Linq;
+using DotVVM.Framework.Binding;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
 
@@ -26,6 +27,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
                 // generate proxy
                 var type = $"{DefaultNamespace}.GridViewProxy";
+                context.Member.MemberType = type;
+                context.Member.GenericTypeNames.Append(itemHelperName);
                 AddGenericPageObjectProperties(pageObject, context, type, itemHelperName);
             }
         }
