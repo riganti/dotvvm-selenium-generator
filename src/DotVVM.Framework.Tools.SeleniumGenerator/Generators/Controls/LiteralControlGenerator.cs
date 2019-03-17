@@ -13,7 +13,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
 
 
-        public override bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context)
+        public override bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             if (context.Control.TryGetProperty(Literal.RenderSpanElementProperty, out var setter))
             {
@@ -23,7 +23,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 }
             }
 
-            return base.CanAddDeclarations(pageObjectDefinition, context);
+            return base.CanAddDeclarations(pageObject, context);
         }
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)

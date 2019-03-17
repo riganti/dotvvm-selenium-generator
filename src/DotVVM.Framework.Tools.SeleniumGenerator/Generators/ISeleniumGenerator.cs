@@ -10,6 +10,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         void AddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context);
 
-        bool CanAddDeclarations(PageObjectDefinition pageObjectDefinition, SeleniumGeneratorContext context);
+        bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context);
     }
 }

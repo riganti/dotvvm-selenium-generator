@@ -2,5 +2,5 @@
 
 <div>
     Main Counter:
-    <cc:Counter DataContext="{value: MainCounter}" />
+    <cc:Counter DataContext="{value: MainCounter}"  UITests.Name="Counter"/>
 </div>
