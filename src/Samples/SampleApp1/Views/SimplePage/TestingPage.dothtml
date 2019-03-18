@@ -11,6 +11,10 @@
 
         <h1>{{value: Title}}</h1>
 
+        <dot:EmptyData DataSource="{value: Customers}" UITests.Name="Customers3">
+            <p>Empty</p>
+        </dot:EmptyData>
+
         <dot:EmptyData DataSource="{value: Customers}" UITests.Name="Customers">
             <p>Empty</p>
         </dot:EmptyData>
@@ -27,24 +31,24 @@
 
         <dot:GridView DataSource="{value: Customers}" UITests.Name="Customers1">
             <Columns>
-                <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID"  UITests.Name="Id"/>
-                <dot:GridViewTextColumn ValueBinding="{value: Name}" HeaderText="Name"  UITests.Name="Name"/>
+                <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID" UITests.Name="Id" />
+                <dot:GridViewTextColumn ValueBinding="{value: Name}" HeaderText="Name" UITests.Name="Name" />
                 <dot:GridViewTemplateColumn HeaderText="PostalCode" UITests.Name="PostalCode">
                     <ContentTemplate>
-                        <dot:TextBox Text="{value: PostalCode}"  UITests.Name="PostalCode"/>
+                        <dot:TextBox Text="{value: PostalCode}" UITests.Name="PostalCode" />
                     </ContentTemplate>
                 </dot:GridViewTemplateColumn>
-                <dot:GridViewCheckBoxColumn ValueBinding="{value: IsChecked}" HeaderText="IsChecked"  UITests.Name="IsChecked"/>
+                <dot:GridViewCheckBoxColumn ValueBinding="{value: IsChecked}" HeaderText="IsChecked" UITests.Name="IsChecked" />
             </Columns>
         </dot:GridView>
 
-        <dot:DataPager DataSet="{value: Customers}" class="pager" UITests.Name="Customers2"/>
+        <dot:DataPager DataSet="{value: Customers}" class="pager" UITests.Name="Customers2" />
 
         <dot:ComboBox DataSource="{value: Customers.Items}"
                       SelectedValue="{value: SelectedCustomer}"
                       EmptyItemText="Vyberte..."
                       ItemValueBinding="{value: Id}"
-                      ItemTextBinding="{value: Name}"  UITests.Name="SelectedCustomer"/>
+                      ItemTextBinding="{value: Name}" UITests.Name="SelectedCustomer" />
 
     </body>
 </html>

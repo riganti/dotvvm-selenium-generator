@@ -46,6 +46,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
                 pageObject.AssertPublicProperty(typeof(ButtonProxy), "CreateCompany");
                 pageObject.AssertPublicProperty(typeof(LinkButtonProxy), "ResetForm");
                 pageObject.AssertPublicProperty(typeof(LiteralProxy), "StatusMessage");
+                pageObject.AssertPublicProperty(typeof(ValidationSummaryProxy), "ValidationSummary");
             }
         }
     }

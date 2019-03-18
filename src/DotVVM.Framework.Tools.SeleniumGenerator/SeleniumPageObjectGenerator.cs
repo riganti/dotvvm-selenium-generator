@@ -24,14 +24,16 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             // resolve control tree
             var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath, dotvvmConfiguration);
 
+            var usedSelectors = GetUsedSelectors(viewTree);
+
             // resolve master pages of current page
             var masterPageObjectDefinitions = ResolveMasterPages(dotvvmConfiguration, seleniumConfiguration, viewTree);
-            var masterUsedUniqueNames = masterPageObjectDefinitions.SelectMany(m => m.UsedNames).ToHashSet();
-            
-            // create page object
-            var pageObject = CreatePageObjectDefinition(seleniumConfiguration, viewTree, masterUsedUniqueNames);
 
-            // combine all master page objects with current page object
+            var allUsedNames = UnionUsedUniqueNames(masterPageObjectDefinitions, usedSelectors);
+
+            var pageObject = CreatePageObjectDefinition(seleniumConfiguration, viewTree, allUsedNames);
+
+            // combine all master page objects with current page object so we can generate page object class for all proxies
             pageObject = CombineViewHelperDefinitions(pageObject, masterPageObjectDefinitions);
 
             // generate the class
@@ -39,6 +41,22 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
             // update view markup file
             UpdateMarkupFile(pageObject, seleniumConfiguration.ViewFullPath);
+        }
+
+        private HashSet<string> UnionUsedUniqueNames(
+            IEnumerable<MasterPageObjectDefinition> masterPageObjectDefinitions, 
+            IEnumerable<string> usedSelectors)
+        {
+            var masterPagesUsedNames = masterPageObjectDefinitions.SelectMany(m => m.UsedNames);
+            return masterPagesUsedNames.Union(usedSelectors).ToHashSet();
+        }
+
+        private HashSet<string> GetUsedSelectors(IAbstractTreeRoot viewTree)
+        {
+            // traverse the tree
+            var visitor = new SeleniumSelectorsFinderVisitor();
+            visitor.VisitView((ResolvedTreeRoot)viewTree);
+            return visitor.GetResult();
         }
 
         private PageObjectDefinition CombineViewHelperDefinitions(PageObjectDefinition pageObject,
@@ -83,7 +101,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 if (masterPageFile != null)
                 {
                     var masterTree = ResolveControlTree(masterPageFile.Value, dotvvmConfiguration);
-                    var masterPageObjectDefinition = GetMasterPageObjectDefinition(seleniumConfiguration, masterTree, masterPageFile);
+                    var usedSelectors = GetUsedSelectors(masterTree);
+
+                    var masterPageObjectDefinition = GetMasterPageObjectDefinition(seleniumConfiguration, masterTree, masterPageFile, usedSelectors);
 
                     pageObjectDefinitions.Add(masterPageObjectDefinition);
 
@@ -96,9 +116,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private MasterPageObjectDefinition GetMasterPageObjectDefinition(
             SeleniumGeneratorConfiguration seleniumConfiguration,
             IAbstractTreeRoot masterTree,
-            IAbstractDirective masterPageFile)
+            IAbstractDirective masterPageFile, 
+            HashSet<string> usedSelectors)
         {
-            var definition = CreatePageObjectDefinition(seleniumConfiguration, masterTree);
+            var definition = CreatePageObjectDefinition(seleniumConfiguration, masterTree, usedSelectors);
             return MapPageObjectDefinition(definition, masterPageFile);
         }
 
@@ -168,7 +189,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             FileSystemHelpers.WriteFile(seleniumConfiguration.HelperFileFullPath, tree.ToString(), false);
         }
 
-        private static PageObjectDefinition CreatePageObjectDefinition(
+        private PageObjectDefinition CreatePageObjectDefinition(
             SeleniumGeneratorConfiguration seleniumConfiguration, IAbstractTreeRoot tree,
             HashSet<string> masterUsedUniqueNames = null)
         {
@@ -181,7 +202,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             return visitor.PopScope();
         }
 
-        private static PageObjectDefinition GetPageObjectDefinition(SeleniumGeneratorConfiguration seleniumConfiguration,
+        private PageObjectDefinition GetPageObjectDefinition(SeleniumGeneratorConfiguration seleniumConfiguration,
             HashSet<string> masterUsedUniqueNames)
         {
             var pageObjectDefinition = new PageObjectDefinition { Name = seleniumConfiguration.HelperName };
@@ -204,7 +225,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 .AddMembers(pageObjectDefinition.Children.Select(GenerateHelperClassContents).ToArray());
         }
 
-        private static ConstructorDeclarationSyntax GetConstructor(PageObjectDefinition pageObjectDefinition)
+        private ConstructorDeclarationSyntax GetConstructor(PageObjectDefinition pageObjectDefinition)
         {
             return SyntaxFactory
                 .ConstructorDeclaration(pageObjectDefinition.Name)
@@ -214,7 +235,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 .WithBody(SyntaxFactory.Block(pageObjectDefinition.ConstructorStatements));
         }
 
-        private static ParameterListSyntax GetConstructorMembers()
+        private ParameterListSyntax GetConstructorMembers()
         {
             return SyntaxFactory.ParameterList(SyntaxFactory.SeparatedList(new[]
             {
@@ -229,7 +250,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }));
         }
 
-        private static ConstructorInitializerSyntax GetBaseConstructorParameters()
+        private ConstructorInitializerSyntax GetBaseConstructorParameters()
         {
             return SyntaxFactory.ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                                 {
@@ -239,12 +260,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     })));
         }
 
-        private static SyntaxTokenList GetClassModifiers()
+        private SyntaxTokenList GetClassModifiers()
         {
             return SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
         }
 
-        private static BaseListSyntax GetBaseTypeDeclaration()
+        private BaseListSyntax GetBaseTypeDeclaration()
         {
             return SyntaxFactory.BaseList(SyntaxFactory.SeparatedList<BaseTypeSyntax>(new[]
             {
