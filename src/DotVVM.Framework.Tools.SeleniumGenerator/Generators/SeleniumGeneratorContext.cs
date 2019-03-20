@@ -11,7 +11,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         public string UniqueName { get; set; }
 
-        public HashSet<string> UsedNames { get; set; }
+        public HashSet<string> UsedNames { get; set; } = new HashSet<string>();
+
+        public HashSet<string> ExistingUsedNames { get; set; }
 
         public SeleniumPageObjectVisitor Visitor { get; set; }
     }

@@ -8,7 +8,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies.GridViewColumns
 {
     public class GridViewTextColumnProxy : WebElementProxyBase
     {
-        public GridViewTextColumnProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public GridViewTextColumnProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
     }

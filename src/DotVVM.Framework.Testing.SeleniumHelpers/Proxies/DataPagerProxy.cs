@@ -7,11 +7,11 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class DataPagerProxy : WebElementProxyBase
     {
-        public DataPagerProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public DataPagerProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
 
-        public bool IsVisible()
+        public override bool IsVisible()
         {
             return FindElement().Displayed;
         }

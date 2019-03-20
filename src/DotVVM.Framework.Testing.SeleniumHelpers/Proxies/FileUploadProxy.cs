@@ -2,7 +2,7 @@
 {
     public class FileUploadProxy : WebElementProxyBase
     {
-        public FileUploadProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public FileUploadProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
     }

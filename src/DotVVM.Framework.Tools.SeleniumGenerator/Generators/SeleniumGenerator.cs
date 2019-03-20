@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
+using Microsoft.CodeAnalysis;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
@@ -58,9 +59,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             AddDeclarationsCore(pageObject, context);
         }
 
-        private static string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
+        private string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
         {
-            if (context.UsedNames.Contains(propertyName))
+            if (context.ExistingUsedNames.Contains(propertyName) && context.UsedNames.Contains(propertyName))
             {
                 var index = 1;
                 while (context.UsedNames.Contains(propertyName + index))
@@ -317,7 +318,27 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(context.Selector)))
+                                SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(
+                                    SyntaxFactory.IdentifierName("CssSelector"))
+                                    .WithInitializer(
+                                        SyntaxFactory.InitializerExpression(
+                                            SyntaxKind.ObjectInitializerExpression,
+                                            SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
+                                            {
+                                                SyntaxFactory.AssignmentExpression(
+                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                    SyntaxFactory.IdentifierName("UiName"),
+                                                    SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(propertyName))),
+                                                SyntaxFactory.Token(SyntaxKind.CommaToken),
+                                                SyntaxFactory.AssignmentExpression(
+                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                    SyntaxFactory.IdentifierName("Parent"),
+                                                    SyntaxFactory.IdentifierName("parentSelector"))
+                                            })
+                                        )
+                                    )
+                                )
+                                //SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(context.Selector)))
                             }))
                         )
                 )

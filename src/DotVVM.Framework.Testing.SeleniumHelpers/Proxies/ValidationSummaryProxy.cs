@@ -9,7 +9,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class ValidationSummaryProxy : WebElementProxyBase
     {
-        public ValidationSummaryProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public ValidationSummaryProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
 

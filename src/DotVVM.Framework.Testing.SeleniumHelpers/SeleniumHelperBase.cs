@@ -9,27 +9,27 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
 
         public SeleniumHelperBase ParentHelper { get; set; }
 
-        public string SelectorPrefix { get; private set; }
+        public CssSelector ParentSelector { get; private set; }
 
 
-        public SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, string selectorPrefix = "")
+        public SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, CssSelector parentSelector = null)
         {
             WebDriver = webDriver;
             ParentHelper = parentHelper;
-            SelectorPrefix = selectorPrefix;
+            ParentSelector = parentSelector;
         }
 
-        public string BuildElementSelector(string elementUniqueName)
+        public string BuildElementSelector(CssSelector elementUniqueName)
         {
-            var selector = $"[data-uitest-name={elementUniqueName}]";
+            var selector = $"[data-uitest-name={elementUniqueName.UiName}]";
 
-            if (string.IsNullOrEmpty(SelectorPrefix))
+            if (ParentSelector == null)
             {
                 return selector;
             }
             else
             {
-                return SelectorPrefix + " " + selector;
+                return ParentSelector.UiName + " " + selector;
             }
         }
         

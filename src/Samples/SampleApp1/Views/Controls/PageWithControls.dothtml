@@ -24,9 +24,12 @@
             <cc:ControlB  UITests.Name="ControlB"/>
         </dot:Repeater>
 
+        <dot:TextBox Text="{value: Name}"  UITests.Name="Name"/>
+
         <p>
             <dot:Button Text="Add Control B" Click="{command: AddControlB()}"  UITests.Name="AddControlB"/>
         </p>
+
     </fieldset>
 
 </body>

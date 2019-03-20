@@ -5,11 +5,11 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class EmptyDataProxy : WebElementProxyBase
     {
-        public EmptyDataProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public EmptyDataProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
 
-        public bool IsVisible()
+        public override bool IsVisible()
         {
             try
             {

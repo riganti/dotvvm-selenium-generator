@@ -6,7 +6,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class GridViewProxy<TItemHelper> : WebElementProxyBase where TItemHelper : SeleniumHelperBase
     {
-        public GridViewProxy(SeleniumHelperBase helper, string selector) : base(helper, selector)
+        public GridViewProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
         {
         }
 

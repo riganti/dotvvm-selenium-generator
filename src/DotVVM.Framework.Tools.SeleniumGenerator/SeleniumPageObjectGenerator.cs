@@ -175,7 +175,17 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private void GeneratePageObjectClass(SeleniumGeneratorConfiguration seleniumConfiguration, PageObjectDefinition pageObject)
         {
             var tree = CSharpSyntaxTree.Create(
-                SyntaxFactory.CompilationUnit().WithMembers(SyntaxFactory.List(new MemberDeclarationSyntax[]
+                SyntaxFactory.CompilationUnit()
+                    .WithUsings(SyntaxFactory.SingletonList(
+                        SyntaxFactory.UsingDirective(
+                            SyntaxFactory.QualifiedName(
+                                SyntaxFactory.QualifiedName(
+                                    SyntaxFactory.QualifiedName(
+                                        SyntaxFactory.IdentifierName("DotVVM"),
+                                        SyntaxFactory.IdentifierName("Framework")),
+                                    SyntaxFactory.IdentifierName("Testing")),
+                                SyntaxFactory.IdentifierName("SeleniumHelpers")))))
+                    .WithMembers(SyntaxFactory.List(new MemberDeclarationSyntax[]
                     {
                         SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(seleniumConfiguration.TargetNamespace))
                             .WithMembers(SyntaxFactory.List(new MemberDeclarationSyntax[]
@@ -208,7 +218,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             var pageObjectDefinition = new PageObjectDefinition { Name = seleniumConfiguration.HelperName };
             if (masterUsedUniqueNames != null)
             {
-                pageObjectDefinition.UsedNames.UnionWith(masterUsedUniqueNames);
+                pageObjectDefinition.ExistingUsedNames.UnionWith(masterUsedUniqueNames);
             }
 
             return pageObjectDefinition;
@@ -244,9 +254,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("parentHelper"))
                              .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.SeleniumHelperBase"))
                              .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null"))),
-                SyntaxFactory.Parameter(SyntaxFactory.Identifier("selectorPrefix"))
-                             .WithType(SyntaxFactory.ParseTypeName("System.String"))
-                             .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(""))))
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier("parentSelector"))
+                             .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.CssSelector"))
+                             .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null")))
             }));
         }
 
@@ -256,7 +266,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                                 {
                         SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
                         SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentHelper")),
-                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("selectorPrefix"))
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentSelector"))
                     })));
         }
 

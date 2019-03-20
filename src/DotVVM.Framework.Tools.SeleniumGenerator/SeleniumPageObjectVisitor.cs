@@ -80,7 +80,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 var context = new SeleniumGeneratorContext()
                 {
                     Control = control,
-                    UsedNames = helperDefinition.UsedNames,
+                    ExistingUsedNames = helperDefinition.ExistingUsedNames,
                     Visitor = this
                 };
 
