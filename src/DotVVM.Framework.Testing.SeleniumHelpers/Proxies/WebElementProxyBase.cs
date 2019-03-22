@@ -21,7 +21,23 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         protected IWebElement FindElement()
         {
             var selector = Helper.BuildElementSelector(Selector);
-            return Helper.WebDriver.FindElement(By.CssSelector(selector));
+
+            var elements = Helper.WebDriver.FindElements(By.CssSelector(selector));
+            foreach(var element in elements)
+            {
+                if(Selector.Parent != null)
+                {
+
+                }
+                else
+                {
+                    var parent = element.FindElement(By.XPath(".."));
+                }
+            }
+
+            return elements[2];
+
+            //return Helper.WebDriver.FindElement(By.CssSelector(selector));
         }
 
         public virtual bool IsVisible()

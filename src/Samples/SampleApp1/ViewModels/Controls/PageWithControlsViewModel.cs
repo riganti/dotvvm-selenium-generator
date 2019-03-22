@@ -9,7 +9,7 @@ namespace SampleApp1.ViewModels.Controls
     {
         public CounterDTO MainCounter { get; set; } = new CounterDTO { Count = 10 };
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "Bye";
 
         public List<CounterSectionDTO> Sections { get; set; } = new List<CounterSectionDTO>();
 

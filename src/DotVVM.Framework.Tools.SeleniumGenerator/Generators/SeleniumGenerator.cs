@@ -356,7 +356,27 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         .WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                         {
                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
-                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentHelper"))
+                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                            SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(
+                                    SyntaxFactory.IdentifierName("CssSelector"))
+                                    .WithInitializer(
+                                        SyntaxFactory.InitializerExpression(
+                                            SyntaxKind.ObjectInitializerExpression,
+                                            SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
+                                            {
+                                                SyntaxFactory.AssignmentExpression(
+                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                    SyntaxFactory.IdentifierName("UiName"),
+                                                    SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(propertyName))),
+                                                SyntaxFactory.Token(SyntaxKind.CommaToken),
+                                                SyntaxFactory.AssignmentExpression(
+                                                    SyntaxKind.SimpleAssignmentExpression,
+                                                    SyntaxFactory.IdentifierName("Parent"),
+                                                    SyntaxFactory.IdentifierName("parentSelector"))
+                                            })
+                                        )
+                                    )
+                                )
                         })))
                 )
             );
