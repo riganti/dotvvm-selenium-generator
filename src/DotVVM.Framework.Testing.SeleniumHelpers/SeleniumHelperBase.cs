@@ -19,6 +19,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
             ParentSelector = parentSelector;
         }
 
+        //TODO: build selector using parent's selector
         public string BuildElementSelector(CssSelector elementUniqueName)
         {
             var selector = $"[data-uitest-name={elementUniqueName.UiName}]";
@@ -29,7 +30,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
             }
             else
             {
-                return ParentSelector.UiName + " " + selector;
+                return ParentSelector.ToString() + " > " + selector;
             }
         }
         

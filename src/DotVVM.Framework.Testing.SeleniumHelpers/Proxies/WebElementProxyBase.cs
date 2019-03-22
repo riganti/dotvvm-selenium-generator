@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Linq;
 using OpenQA.Selenium;
 
 namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public abstract class WebElementProxyBase
     {
+        private const string AttributeName = "data-uitest-name";
+
         public SeleniumHelperBase Helper { get; private set; }
 
         public CssSelector Selector { get; private set; }
 
 
-        public WebElementProxyBase(SeleniumHelperBase helper, CssSelector selector)
+        protected WebElementProxyBase(SeleniumHelperBase helper, CssSelector selector)
         {
             Helper = helper;
             Selector = selector;
@@ -25,17 +28,45 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             var elements = Helper.WebDriver.FindElements(By.CssSelector(selector));
             foreach(var element in elements)
             {
-                if(Selector.Parent != null)
-                {
+                var parentSelector = Selector.Parent;
+                var isFound = true;
 
-                }
-                else
+                var parents = element.FindElements(By.XPath("./ancestor::*[not(name()='body' or name()='html')] ")).Reverse();
+                foreach (var parent in parents)
                 {
-                    var parent = element.FindElement(By.XPath(".."));
+                    var attribute = parent.GetAttribute(AttributeName);
+
+                    if (parentSelector?.Index != null)
+                    {
+                        var neighbors = parent.FindElements(By.XPath(""));
+;
+                        attribute = $"[data-uitest-name={attribute}]>*:nth-child({neighbors.IndexOf(parent)})";
+                    }
+
+                    if (attribute != null && parentSelector == null)
+                    {
+                        isFound = false;
+                        break;
+                    }
+
+                    if (attribute != null && parentSelector.UiName != attribute)
+                    {
+                        isFound = false;
+                        break;
+                    }
+                    else
+                    {
+                        parentSelector = parentSelector.Parent;
+                    }
+                }
+
+                if (isFound)
+                {
+                    return element;
                 }
             }
 
-            return elements[2];
+            throw new NotFoundException();
 
             //return Helper.WebDriver.FindElement(By.CssSelector(selector));
         }

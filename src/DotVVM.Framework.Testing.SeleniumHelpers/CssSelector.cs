@@ -10,12 +10,13 @@
 
         public override string ToString()
         {
-            if (Parent != null)
-            {
-                return Parent.ToString() + "_" + UiName;
-            }
+            //TODO: after DataContextPrefixed will be working again
+            //if (Parent != null)
+            //{
+            //    return Parent.ToString() + "_" + UiName;
+            //}
 
-            return UiName;
+            return $"[data-uitest-name={UiName}]";
         }
     }
 }

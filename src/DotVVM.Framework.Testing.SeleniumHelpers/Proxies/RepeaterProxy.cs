@@ -19,7 +19,14 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         {
             var selector = Helper.BuildElementSelector(Selector) + ">*:nth-child(" + (index + 1) + ")";
 
-            return (TItemHelper) Activator.CreateInstance(typeof(TItemHelper), Helper.WebDriver, Helper, selector);
+            var sel = new CssSelector
+            {
+                Index = index,
+                Parent = Selector,
+                UiName = selector
+            };
+
+            return (TItemHelper) Activator.CreateInstance(typeof(TItemHelper), Helper.WebDriver, Helper, sel);
         }
     }
 }
