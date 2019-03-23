@@ -7,7 +7,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class ComboBoxProxy : WebElementProxyBase
     {
-        public ComboBoxProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public ComboBoxProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
 

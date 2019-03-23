@@ -6,7 +6,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class GridViewProxy<TItemHelper> : WebElementProxyBase where TItemHelper : SeleniumHelperBase
     {
-        public GridViewProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public GridViewProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
 
@@ -47,7 +47,16 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
         public TItemHelper GetItem(int index)
         {
-            var selector = $"{Helper.BuildElementSelector(Selector)} > tbody >*:nth-child({index + 1})";
+            //var selector = $"{Helper.BuildElementSelector(Selector)} > tbody >*:nth-child({index + 1})";
+
+            var uiName = $"{Helper.BuildElementSelector(Selector)}";
+
+            var selector = new PathSelector
+            {
+                Index = index,
+                Parent = Selector,
+                UiName = uiName
+            };
 
             return (TItemHelper)Activator.CreateInstance(typeof(TItemHelper), Helper.WebDriver, Helper, selector);
         }

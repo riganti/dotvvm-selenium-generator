@@ -8,7 +8,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies.GridViewColumns
 {
     public class GridViewCheckBoxColumnProxy : WebElementProxyBase
     {
-        public GridViewCheckBoxColumnProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public GridViewCheckBoxColumnProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
     }

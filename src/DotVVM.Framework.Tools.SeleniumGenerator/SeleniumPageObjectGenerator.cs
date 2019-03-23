@@ -255,7 +255,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                              .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.SeleniumHelperBase"))
                              .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null"))),
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("parentSelector"))
-                             .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.CssSelector"))
+                             .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.PathSelector"))
                              .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null")))
             }));
         }

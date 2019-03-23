@@ -3,7 +3,7 @@
     public class CheckBoxProxy : WebElementProxyBase
     {
 
-        public CheckBoxProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public CheckBoxProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
 

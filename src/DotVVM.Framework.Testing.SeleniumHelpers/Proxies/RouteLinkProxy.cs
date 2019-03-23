@@ -2,7 +2,7 @@
 {
     public class RouteLinkProxy : ButtonProxy
     {
-        public RouteLinkProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public RouteLinkProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
     }

@@ -5,7 +5,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 {
     public class EmptyDataProxy : WebElementProxyBase
     {
-        public EmptyDataProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public EmptyDataProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
 

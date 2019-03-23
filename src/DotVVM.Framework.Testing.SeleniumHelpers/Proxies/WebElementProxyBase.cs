@@ -11,10 +11,10 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
         public SeleniumHelperBase Helper { get; private set; }
 
-        public CssSelector Selector { get; private set; }
+        public PathSelector Selector { get; private set; }
 
 
-        protected WebElementProxyBase(SeleniumHelperBase helper, CssSelector selector)
+        protected WebElementProxyBase(SeleniumHelperBase helper, PathSelector selector)
         {
             Helper = helper;
             Selector = selector;
@@ -24,50 +24,50 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         // selector can't be string - use some object or list
         protected IWebElement FindElement()
         {
-            var selector = Helper.BuildElementSelector(Selector);
+            var elementSelector = Helper.BuildElementSelector(Selector);
 
-            var elements = Helper.WebDriver.FindElements(By.XPath(selector));
-            foreach(var element in elements)
+            var elementsBySelector = Helper.WebDriver.FindElements(By.XPath(elementSelector));
+            foreach(var element in elementsBySelector)
             {
-                CssSelector parentSelector = Selector.Parent;
+                PathSelector parentSelector = Selector.Parent;
                 IWebElement childElement = element;
                 string childAttribute = Selector.UiName;
                 bool isFound = true;
 
-                var parents = element.FindElements(By.XPath(AncestorString)).Reverse().ToList();
-                foreach (var parent in parents)
+                var ancestors = element.FindElements(By.XPath(AncestorString)).Reverse();
+                foreach (var ancestor in ancestors)
                 {
-                    var attribute = parent.GetAttribute(AttributeName);
+                    var ancestorAttribute = ancestor.GetAttribute(AttributeName);
 
                     if (parentSelector?.Index != null)
                     {
-                        var siblings = parent.FindElements(By.XPath($"./*[@{AttributeName}='{childAttribute}']"));
+                        var siblings = ancestor.FindElements(By.XPath($".//*[@{AttributeName}='{childAttribute}']"));
                         if (siblings.IndexOf(childElement) != parentSelector.Index)
                         {
                             isFound = false;
                             break;
                         }
 
-                        // Refactor
-                        attribute = $"//*[@{AttributeName}='{attribute}']";
+                        //TODO: Refactor
+                        ancestorAttribute = $"//*[@{AttributeName}='{ancestorAttribute}']";
                     }
 
                     //var isParentLast = parent.Equals(parents.Last());
-                    if (attribute != null && parentSelector == null)
+                    if (ancestorAttribute != null && parentSelector == null)
                     {
                         isFound = false;
                         break;
                     }
 
-                    if (attribute != null && parentSelector.UiName != attribute)
+                    if (ancestorAttribute != null && parentSelector.UiName != ancestorAttribute)
                     {
                         isFound = false;
                         break;
                     }
 
                     parentSelector = parentSelector?.Parent;
-                    childElement = parent;
-                    childAttribute = attribute;
+                    childElement = ancestor;
+                    childAttribute = ancestorAttribute;
                 }
 
                 if (isFound)
@@ -76,7 +76,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
                 }
             }
 
-            throw new NotFoundException();
+            throw new NoSuchElementException();
         }
 
         public virtual bool IsVisible()

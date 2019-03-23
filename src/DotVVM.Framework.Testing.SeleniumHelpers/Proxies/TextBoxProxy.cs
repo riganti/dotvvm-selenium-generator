@@ -2,7 +2,7 @@
 {
     public class TextBoxProxy : WebElementProxyBase
     {
-        public TextBoxProxy(SeleniumHelperBase helper, CssSelector selector) : base(helper, selector)
+        public TextBoxProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
 

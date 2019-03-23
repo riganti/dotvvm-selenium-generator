@@ -125,9 +125,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             if (uniqueName == null && context.Control.DothtmlNode is DothtmlElementNode htmlNode)
             {
                 uniqueName = htmlNode.TagName;
-                
+
                 // not add dataContext when generating page object for user control
-                shouldAddDataContextPrefixes = false;   
+                shouldAddDataContextPrefixes = false;
             }
 
             // if not found, use control name
@@ -146,7 +146,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         protected string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
         {
-            if(dataContextPrefixes.Any())
+            if (dataContextPrefixes.Any())
             {
                 uniqueName = $"{string.Join("", dataContextPrefixes)}{SetFirstLetterUp(uniqueName)}";
             }
@@ -206,9 +206,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         return RemoveNonIdentifierCharacters(propertySetter.Value?.ToString());
 
                     case ResolvedPropertyBinding propertyBinding:
-                    {
-                        return RemoveNonIdentifierCharacters(propertyBinding.Binding.Value);
-                    }
+                        {
+                            return RemoveNonIdentifierCharacters(propertyBinding.Binding.Value);
+                        }
                 }
             }
             return null;
@@ -270,9 +270,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
         }
 
-        protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject, 
+        protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject,
             SeleniumGeneratorContext context,
-            string type, 
+            string type,
             string itemHelperName)
         {
             pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type, itemHelperName));
@@ -285,13 +285,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 return SyntaxFactory.ParseTypeName(typeName);
             }
-            else
-            {
-                return SyntaxFactory.GenericName(typeName)
-                    .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(
-                            genericTypeNames.Select(n => SyntaxFactory.ParseTypeName(n)))
-                    ));
-            }
+
+            return SyntaxFactory.GenericName(typeName)
+                .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(
+                    genericTypeNames.Select(n => SyntaxFactory.ParseTypeName(n)))
+                ));
         }
 
         protected MemberDeclarationSyntax GeneratePropertyForProxy(string uniqueName, string typeName, params string[] genericTypeNames)
@@ -318,27 +316,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(
-                                    SyntaxFactory.IdentifierName("CssSelector"))
-                                    .WithInitializer(
-                                        SyntaxFactory.InitializerExpression(
-                                            SyntaxKind.ObjectInitializerExpression,
-                                            SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
-                                            {
-                                                SyntaxFactory.AssignmentExpression(
-                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                    SyntaxFactory.IdentifierName("UiName"),
-                                                    SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(propertyName))),
-                                                SyntaxFactory.Token(SyntaxKind.CommaToken),
-                                                SyntaxFactory.AssignmentExpression(
-                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                    SyntaxFactory.IdentifierName("Parent"),
-                                                    SyntaxFactory.IdentifierName("parentSelector"))
-                                            })
-                                        )
-                                    )
-                                )
-                                //SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(context.Selector)))
+                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName))
                             }))
                         )
                 )
@@ -346,6 +324,23 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         }
 
         // TODO: decide if proxy should be generated or using property like this
+        protected StatementSyntax GenerateInitializerForControl(string propertyName, string typeName)
+        {
+            return SyntaxFactory.ExpressionStatement(
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    SyntaxFactory.IdentifierName(propertyName),
+                    SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(typeName))
+                        .WithArgumentList(SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+                        {
+                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
+                            SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
+                            SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName))
+                        })))
+                )
+            );
+        }
+
         protected StatementSyntax GenerateInitializerForTemplate(string propertyName, string typeName)
         {
             return SyntaxFactory.ExpressionStatement(
@@ -357,29 +352,34 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         {
                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
                             SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                            SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(
-                                    SyntaxFactory.IdentifierName("CssSelector"))
-                                    .WithInitializer(
-                                        SyntaxFactory.InitializerExpression(
-                                            SyntaxKind.ObjectInitializerExpression,
-                                            SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
-                                            {
-                                                SyntaxFactory.AssignmentExpression(
-                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                    SyntaxFactory.IdentifierName("UiName"),
-                                                    SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(propertyName))),
-                                                SyntaxFactory.Token(SyntaxKind.CommaToken),
-                                                SyntaxFactory.AssignmentExpression(
-                                                    SyntaxKind.SimpleAssignmentExpression,
-                                                    SyntaxFactory.IdentifierName("Parent"),
-                                                    SyntaxFactory.IdentifierName("parentSelector"))
-                                            })
-                                        )
-                                    )
-                                )
+                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("parentSelector"))
                         })))
                 )
             );
+        }
+
+        private ObjectCreationExpressionSyntax GetPathSelectorObjectInitialization(string propertyName)
+        {
+            return SyntaxFactory.ObjectCreationExpression(
+                    SyntaxFactory.IdentifierName("PathSelector"))
+                .WithInitializer(
+                    SyntaxFactory.InitializerExpression(
+                        SyntaxKind.ObjectInitializerExpression,
+                        SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
+                        {
+                            SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.IdentifierName("UiName"),
+                                SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression,
+                                    SyntaxFactory.Literal(propertyName))),
+                            SyntaxFactory.Token(SyntaxKind.CommaToken),
+                            SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.IdentifierName("Parent"),
+                                SyntaxFactory.IdentifierName("parentSelector"))
+                        })
+                    )
+                );
         }
 
         protected abstract void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context);

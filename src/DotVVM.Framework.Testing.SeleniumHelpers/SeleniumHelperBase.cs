@@ -9,10 +9,10 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
 
         public SeleniumHelperBase ParentHelper { get; set; }
 
-        public CssSelector ParentSelector { get; private set; }
+        public PathSelector ParentSelector { get; private set; }
 
 
-        public SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, CssSelector parentSelector = null)
+        public SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, PathSelector parentSelector = null)
         {
             WebDriver = webDriver;
             ParentHelper = parentHelper;
@@ -20,7 +20,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
         }
 
         //TODO: build selector using parent's selector
-        public string BuildElementSelector(CssSelector elementUniqueName)
+        public string BuildElementSelector(PathSelector elementUniqueName)
         {
             var selector = $"//*[@data-uitest-name='{elementUniqueName.UiName}']";
 
@@ -30,7 +30,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
             }
             else if (ParentSelector?.Index != null)
             {
-                return $"{ParentSelector.ToString()}/*[@data-uitest-name='{elementUniqueName.UiName}']";
+                return $"{ParentSelector.ToString()}{elementUniqueName}";
             }
             else
             {
