@@ -17,7 +17,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         // TODO: CssSelector class
         public TItemHelper GetItem(int index)
         {
-            var selector = Helper.BuildElementSelector(Selector) + ">*:nth-child(" + (index + 1) + ")";
+            var selector = $"{Helper.BuildElementSelector(Selector)}";
 
             var sel = new CssSelector
             {

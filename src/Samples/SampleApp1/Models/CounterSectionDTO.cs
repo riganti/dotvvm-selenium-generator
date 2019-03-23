@@ -9,7 +9,7 @@ namespace SampleApp1.Models
     {
 
         public string Name { get; set; }
-
+        public string Language { get; set; }
         public CounterDTO Counter { get; set; }
 
     }

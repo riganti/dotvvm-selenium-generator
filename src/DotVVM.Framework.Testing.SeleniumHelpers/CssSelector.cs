@@ -16,7 +16,16 @@
             //    return Parent.ToString() + "_" + UiName;
             //}
 
-            return $"[data-uitest-name={UiName}]";
+            //return UiName;
+            if (Index == null)
+            {
+                return $"//*[@data-uitest-name='{UiName}']";
+
+            }
+            else
+            {
+                return UiName;
+            }
         }
     }
 }

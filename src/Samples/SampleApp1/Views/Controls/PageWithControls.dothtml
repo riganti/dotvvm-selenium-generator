@@ -22,6 +22,7 @@
 
         <dot:Repeater DataSource="{value: Sections}" UITests.Name="Sections">
             <cc:ControlB  UITests.Name="ControlB"/>
+            <dot:TextBox Text="{value: Language}"  UITests.Name="Language"/>
         </dot:Repeater>
 
         <dot:TextBox Text="{value: Name}"  UITests.Name="Name"/>

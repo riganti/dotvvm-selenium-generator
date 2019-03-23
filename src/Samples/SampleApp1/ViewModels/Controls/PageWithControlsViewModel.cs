@@ -34,6 +34,14 @@ namespace SampleApp1.ViewModels.Controls
                         {
                             Count = 3
                         }
+                    },
+                    new CounterSectionDTO()
+                    {
+                        Name = "Section C",
+                        Counter = new CounterDTO()
+                        {
+                            Count = 3
+                        }
                     }
                 };
             }

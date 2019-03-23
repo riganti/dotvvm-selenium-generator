@@ -7,6 +7,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
     public abstract class WebElementProxyBase
     {
         private const string AttributeName = "data-uitest-name";
+        private const string AncestorString = "./ancestor::*[not(name()='body' or name()='html') and @data-uitest-name]";
 
         public SeleniumHelperBase Helper { get; private set; }
 
@@ -25,24 +26,33 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         {
             var selector = Helper.BuildElementSelector(Selector);
 
-            var elements = Helper.WebDriver.FindElements(By.CssSelector(selector));
+            var elements = Helper.WebDriver.FindElements(By.XPath(selector));
             foreach(var element in elements)
             {
-                var parentSelector = Selector.Parent;
-                var isFound = true;
+                CssSelector parentSelector = Selector.Parent;
+                IWebElement childElement = element;
+                string childAttribute = Selector.UiName;
+                bool isFound = true;
 
-                var parents = element.FindElements(By.XPath("./ancestor::*[not(name()='body' or name()='html')] ")).Reverse();
+                var parents = element.FindElements(By.XPath(AncestorString)).Reverse().ToList();
                 foreach (var parent in parents)
                 {
                     var attribute = parent.GetAttribute(AttributeName);
 
                     if (parentSelector?.Index != null)
                     {
-                        var neighbors = parent.FindElements(By.XPath(""));
-;
-                        attribute = $"[data-uitest-name={attribute}]>*:nth-child({neighbors.IndexOf(parent)})";
+                        var siblings = parent.FindElements(By.XPath($"./*[@{AttributeName}='{childAttribute}']"));
+                        if (siblings.IndexOf(childElement) != parentSelector.Index)
+                        {
+                            isFound = false;
+                            break;
+                        }
+
+                        // Refactor
+                        attribute = $"//*[@{AttributeName}='{attribute}']";
                     }
 
+                    //var isParentLast = parent.Equals(parents.Last());
                     if (attribute != null && parentSelector == null)
                     {
                         isFound = false;
@@ -54,10 +64,10 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
                         isFound = false;
                         break;
                     }
-                    else
-                    {
-                        parentSelector = parentSelector.Parent;
-                    }
+
+                    parentSelector = parentSelector?.Parent;
+                    childElement = parent;
+                    childAttribute = attribute;
                 }
 
                 if (isFound)
@@ -67,8 +77,6 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             }
 
             throw new NotFoundException();
-
-            //return Helper.WebDriver.FindElement(By.CssSelector(selector));
         }
 
         public virtual bool IsVisible()

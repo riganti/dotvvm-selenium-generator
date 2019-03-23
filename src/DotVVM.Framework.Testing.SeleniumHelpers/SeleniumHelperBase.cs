@@ -22,15 +22,19 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
         //TODO: build selector using parent's selector
         public string BuildElementSelector(CssSelector elementUniqueName)
         {
-            var selector = $"[data-uitest-name={elementUniqueName.UiName}]";
+            var selector = $"//*[@data-uitest-name='{elementUniqueName.UiName}']";
 
             if (ParentSelector == null)
             {
                 return selector;
             }
+            else if (ParentSelector?.Index != null)
+            {
+                return $"{ParentSelector.ToString()}/*[@data-uitest-name='{elementUniqueName.UiName}']";
+            }
             else
             {
-                return ParentSelector.ToString() + " > " + selector;
+                return $"{ParentSelector}{selector}";
             }
         }
         
