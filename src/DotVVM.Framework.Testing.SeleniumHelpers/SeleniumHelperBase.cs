@@ -4,38 +4,37 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers
 {
     public abstract class SeleniumHelperBase
     {
+        private const string AttributeName = "data-uitest-name";
 
-        public IWebDriver WebDriver { get; private set; }
+        public IWebDriver WebDriver { get; }
 
         public SeleniumHelperBase ParentHelper { get; set; }
 
-        public PathSelector ParentSelector { get; private set; }
+        public PathSelector ParentSelector { get; }
 
 
-        public SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, PathSelector parentSelector = null)
+        protected SeleniumHelperBase(IWebDriver webDriver, SeleniumHelperBase parentHelper = null, PathSelector parentSelector = null)
         {
             WebDriver = webDriver;
             ParentHelper = parentHelper;
             ParentSelector = parentSelector;
         }
 
-        //TODO: build selector using parent's selector
         public string BuildElementSelector(PathSelector elementUniqueName)
         {
-            var selector = $"//*[@data-uitest-name='{elementUniqueName.UiName}']";
+            var xpathSelector = $"//*[@{AttributeName}='{elementUniqueName.UiName}']";
 
             if (ParentSelector == null)
             {
-                return selector;
+                return xpathSelector;
             }
-            else if (ParentSelector?.Index != null)
+
+            if (ParentSelector?.Index != null)
             {
                 return $"{ParentSelector.ToString()}{elementUniqueName}";
             }
-            else
-            {
-                return $"{ParentSelector}{selector}";
-            }
+
+            return $"{ParentSelector.ToString()}{xpathSelector}";
         }
         
     }

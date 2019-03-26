@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using OpenQA.Selenium;
 
@@ -9,9 +11,9 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         private const string AttributeName = "data-uitest-name";
         private const string AncestorString = "./ancestor::*[not(name()='body' or name()='html') and @data-uitest-name]";
 
-        public SeleniumHelperBase Helper { get; private set; }
+        public SeleniumHelperBase Helper { get; }
 
-        public PathSelector Selector { get; private set; }
+        public PathSelector Selector { get; }
 
 
         protected WebElementProxyBase(SeleniumHelperBase helper, PathSelector selector)
@@ -20,20 +22,18 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             Selector = selector;
         }
 
-        // TODO: rewrite - filter (check OneNote)
-        // selector can't be string - use some object or list
         protected IWebElement FindElement()
         {
-            var elementSelector = Helper.BuildElementSelector(Selector);
+            string childAttribute = Selector.UiName;
+            PathSelector parentSelector = Selector.Parent;
+            bool isElementFound = true;
 
-            var elementsBySelector = Helper.WebDriver.FindElements(By.XPath(elementSelector));
-            foreach(var element in elementsBySelector)
+            var elementsBySelector = GetElementsForCurrentSelector();
+            foreach (var element in elementsBySelector)
             {
-                PathSelector parentSelector = Selector.Parent;
                 IWebElement childElement = element;
-                string childAttribute = Selector.UiName;
-                bool isFound = true;
 
+                // finds all ancestors of current element which has data-uitest-name attribute
                 var ancestors = element.FindElements(By.XPath(AncestorString)).Reverse();
                 foreach (var ancestor in ancestors)
                 {
@@ -41,27 +41,20 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
                     if (parentSelector?.Index != null)
                     {
-                        var siblings = ancestor.FindElements(By.XPath($".//*[@{AttributeName}='{childAttribute}']"));
-                        if (siblings.IndexOf(childElement) != parentSelector.Index)
+                        // finds all siblings of child of current ancestor
+                        var children = GetAllChildren(ancestor, childAttribute);
+                        if (children.IndexOf(childElement) != parentSelector.Index)
                         {
-                            isFound = false;
+                            isElementFound = false;
                             break;
                         }
 
-                        //TODO: Refactor
                         ancestorAttribute = $"//*[@{AttributeName}='{ancestorAttribute}']";
                     }
 
-                    //var isParentLast = parent.Equals(parents.Last());
-                    if (ancestorAttribute != null && parentSelector == null)
+                    isElementFound = CheckParentConditions(ancestorAttribute, parentSelector);
+                    if (!isElementFound)
                     {
-                        isFound = false;
-                        break;
-                    }
-
-                    if (ancestorAttribute != null && parentSelector.UiName != ancestorAttribute)
-                    {
-                        isFound = false;
                         break;
                     }
 
@@ -70,13 +63,41 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
                     childAttribute = ancestorAttribute;
                 }
 
-                if (isFound)
+                if (isElementFound)
                 {
                     return element;
                 }
             }
 
             throw new NoSuchElementException();
+        }
+
+        private bool CheckParentConditions(string ancestorAttribute, PathSelector parentSelector)
+        {
+            if (ancestorAttribute != null && parentSelector == null)
+            {
+                return false;
+            }
+
+            if (ancestorAttribute != null && parentSelector.UiName != ancestorAttribute)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private IEnumerable<IWebElement> GetElementsForCurrentSelector()
+        {
+            var elementSelector = Helper.BuildElementSelector(Selector);
+
+            // finds all elements satisfying current element selector
+            return Helper.WebDriver.FindElements(By.XPath(elementSelector));
+        }
+
+        private ReadOnlyCollection<IWebElement> GetAllChildren(IWebElement ancestor, string childAttribute)
+        {
+            return ancestor.FindElements(By.XPath($".//*[@{AttributeName}='{childAttribute}']"));
         }
 
         public virtual bool IsVisible()
