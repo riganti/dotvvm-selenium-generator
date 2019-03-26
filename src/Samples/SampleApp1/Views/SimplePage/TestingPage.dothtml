@@ -36,6 +36,7 @@
                 <dot:GridViewTemplateColumn HeaderText="PostalCode" UITests.Name="PostalCode">
                     <ContentTemplate>
                         <dot:TextBox Text="{value: PostalCode}" UITests.Name="PostalCode" />
+                        <dot:TextBox Text="{value: TelNumber}"  UITests.Name="TelNumber"/>
                     </ContentTemplate>
                 </dot:GridViewTemplateColumn>
                 <dot:GridViewCheckBoxColumn ValueBinding="{value: IsChecked}" HeaderText="IsChecked" UITests.Name="IsChecked" />

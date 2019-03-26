@@ -55,5 +55,6 @@ namespace SampleApp1.ViewModels.SimplePage
         public string PostalCode { get; set; }
 
         public bool IsChecked { get; set; }
+        public string TelNumber { get; set; }
     }
 }
