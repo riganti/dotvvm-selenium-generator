@@ -13,7 +13,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         public HashSet<string> UsedNames { get; set; } = new HashSet<string>();
 
-        public HashSet<string> ExistingUsedNames { get; set; }
+        public HashSet<string> ExistingUsedSelectors { get; set; }
 
         public SeleniumPageObjectVisitor Visitor { get; set; }
     }

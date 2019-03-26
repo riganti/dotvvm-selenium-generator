@@ -24,14 +24,13 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
         protected IWebElement FindElement()
         {
-            string childAttribute = Selector.UiName;
-            PathSelector parentSelector = Selector.Parent;
-            bool isElementFound = true;
-
             var elementsBySelector = GetElementsForCurrentSelector();
             foreach (var element in elementsBySelector)
             {
                 IWebElement childElement = element;
+                var isElementFound = true;
+                var parentSelector = Selector.Parent;
+                var childAttribute = Selector.UiName;
 
                 // finds all ancestors of current element which has data-uitest-name attribute
                 var ancestors = element.FindElements(By.XPath(AncestorString)).Reverse();

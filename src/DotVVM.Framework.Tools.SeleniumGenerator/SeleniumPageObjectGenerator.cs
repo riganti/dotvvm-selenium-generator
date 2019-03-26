@@ -201,9 +201,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private PageObjectDefinition CreatePageObjectDefinition(
             SeleniumGeneratorConfiguration seleniumConfiguration, IAbstractTreeRoot tree,
-            HashSet<string> masterUsedUniqueNames = null)
+            HashSet<string> masterUsedUniqueSelectors = null)
         {
-            var pageObjectDefinition = GetPageObjectDefinition(seleniumConfiguration, masterUsedUniqueNames);
+            var pageObjectDefinition = GetPageObjectDefinition(seleniumConfiguration, masterUsedUniqueSelectors);
 
             // traverse the tree
             var visitor = new SeleniumPageObjectVisitor();
@@ -213,12 +213,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         }
 
         private PageObjectDefinition GetPageObjectDefinition(SeleniumGeneratorConfiguration seleniumConfiguration,
-            HashSet<string> masterUsedUniqueNames)
+            HashSet<string> masterUsedUniqueSelectors)
         {
             var pageObjectDefinition = new PageObjectDefinition { Name = seleniumConfiguration.HelperName };
-            if (masterUsedUniqueNames != null)
+            if (masterUsedUniqueSelectors != null)
             {
-                pageObjectDefinition.ExistingUsedNames.UnionWith(masterUsedUniqueNames);
+                pageObjectDefinition.ExistingUsedSelectors.UnionWith(masterUsedUniqueSelectors);
             }
 
             return pageObjectDefinition;

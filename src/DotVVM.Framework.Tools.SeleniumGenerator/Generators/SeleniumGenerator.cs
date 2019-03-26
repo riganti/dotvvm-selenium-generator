@@ -40,39 +40,69 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             // determine the name
             var propertyName = DetermineName(pageObject, context);
 
+            // normalize name
+            var normalizedName = RemoveNonIdentifierCharacters(propertyName);
+
             // make the name unique
-            var uniqueName = MakePropertyNameUnique(context, propertyName);
+            var uniqueName = MakePropertyNameUnique(context.UsedNames, normalizedName);
 
             context.UsedNames.Add(uniqueName);
             context.UniqueName = uniqueName;
 
             // determine the selector
-            var selector = TryGetNameFromProperty(context.Control, UITests.NameProperty);
-            if (selector == null)
+            string selector;
+            var htmlName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
+            if (htmlName == null)
             {
-                selector = uniqueName;
+                selector = RemoveNonIdentifierCharacters(propertyName);
+                selector = RemoveUpperLetters(selector);
+                selector = MakePropertyNameUnique(context.ExistingUsedSelectors, selector);
 
-                AddUITestNameProperty(pageObject, context, uniqueName);
+                AddUITestNameProperty(pageObject, context, selector);
             }
+            else
+            {
+                selector = htmlName;
+            }
+
+            context.ExistingUsedSelectors.Add(selector);
             context.Selector = selector;
 
             AddDeclarationsCore(pageObject, context);
         }
 
-        private string MakePropertyNameUnique(SeleniumGeneratorContext context, string propertyName)
+        private string MakePropertyNameUnique(ICollection<string> usedNames, string selector)
         {
-            if (context.ExistingUsedNames.Contains(propertyName) && context.UsedNames.Contains(propertyName))
+            if (usedNames.Contains(selector))
             {
                 var index = 1;
-                while (context.UsedNames.Contains(propertyName + index))
+                while (usedNames.Contains(selector + index))
                 {
                     index++;
                 }
 
-                propertyName += index;
+                selector += index;
             }
 
-            return propertyName;
+            return selector;
+        }
+
+        private string RemoveUpperLetters(string selector)
+        {
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < selector.Length; i++)
+            {
+                char c = selector[i];
+                if (i != 0 && char.IsUpper(c))
+                {
+                    sb.Append('-');
+                }
+
+                sb.Append(char.ToLower(c));
+            }
+
+            return sb.ToString();
         }
 
         public virtual bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
@@ -94,24 +124,20 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
         protected virtual string DetermineName(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            // get the name from the UITest.Name property
-            var uniqueName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
-
             // if selector is set, just read it and don't add data context prefixes
             //var shouldAddDataContextPrefixes = uniqueName == null;
             var shouldAddDataContextPrefixes = false;
 
             // if not found, use the name properties to determine the name
-            if (uniqueName == null)
+
+            string uniqueName = null;
+            foreach (var nameProperty in NameProperties)
             {
-                foreach (var nameProperty in NameProperties)
+                uniqueName = TryGetNameFromProperty(context.Control, nameProperty);
+                if (uniqueName != null)
                 {
-                    uniqueName = TryGetNameFromProperty(context.Control, nameProperty);
-                    if (uniqueName != null)
-                    {
-                        uniqueName = NormalizeUniqueName(uniqueName);
-                        break;
-                    }
+                    uniqueName = NormalizeUniqueName(uniqueName);
+                    break;
                 }
             }
 
@@ -203,12 +229,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 switch (setter)
                 {
                     case ResolvedPropertyValue propertySetter:
-                        return RemoveNonIdentifierCharacters(propertySetter.Value?.ToString());
+                        return propertySetter.Value?.ToString();
 
                     case ResolvedPropertyBinding propertyBinding:
-                        {
-                            return RemoveNonIdentifierCharacters(propertyBinding.Binding.Value);
-                        }
+                        return propertyBinding.Binding.Value;
                 }
             }
             return null;
@@ -217,12 +241,28 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         private string RemoveNonIdentifierCharacters(string value)
         {
             var sb = new StringBuilder();
+            var isLastLetterWhitespace = false;
 
             for (var i = 0; i < value.Length; i++)
             {
-                if (char.IsLetterOrDigit(value[i]) || value[i] == '_')
+                char c = value[i];
+                if (char.IsLetterOrDigit(c) || c == '_')
                 {
-                    sb.Append(value[i]);
+                    if (i == 0)
+                    {
+                        c = char.ToUpper(c);
+                    }
+                    else if (isLastLetterWhitespace)
+                    {
+                        c = char.ToUpper(c);
+                        isLastLetterWhitespace = false;
+                    }
+
+                    sb.Append(c);
+                }
+                else if (char.IsWhiteSpace(c))
+                {
+                    isLastLetterWhitespace = true;
                 }
             }
 
@@ -267,7 +307,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         protected void AddPageObjectProperties(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
         {
             pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, type));
         }
 
         protected void AddGenericPageObjectProperties(PageObjectDefinition pageObject,
@@ -276,7 +316,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             string itemHelperName)
         {
             pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type, itemHelperName));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, context.UniqueName, type, itemHelperName));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, type, itemHelperName));
         }
 
         private static TypeSyntax ParseTypeName(string typeName, params string[] genericTypeNames)
@@ -305,18 +345,18 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 );
         }
 
-        protected StatementSyntax GenerateInitializerForProxy(SeleniumGeneratorContext context, string propertyName, string typeName, params string[] genericTypeNames)
+        protected StatementSyntax GenerateInitializerForProxy(SeleniumGeneratorContext context, string typeName, params string[] genericTypeNames)
         {
             return SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(propertyName),
+                    SyntaxFactory.IdentifierName(context.UniqueName),
                     SyntaxFactory.ObjectCreationExpression(ParseTypeName(typeName, genericTypeNames))
                         .WithArgumentList(
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName))
+                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.Selector))
                             }))
                         )
                 )
