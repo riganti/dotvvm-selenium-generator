@@ -27,6 +27,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             { typeof(LinkButton), new LinkButtonControlGenerator() },
             { typeof(RouteLink), new RouteLinkControlGenerator() },
             { typeof(ComboBox), new ComboBoxControlGenerator() },
+            { typeof(ListBox), new ListBoxControlGenerator() },
             { typeof(DataPager), new DataPagerControlGenerator() },
             { typeof(GridView), new GridViewControlGenerator() },
             { typeof(UpdateProgress), new UpdateProgressControlGenerator() },

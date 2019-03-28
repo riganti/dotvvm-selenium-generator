@@ -21,6 +21,11 @@
             <p>Empty</p>
         </dot:EmptyData>
 
+        <dot:ListBox DataSource="{value: Customers.Items}" 
+                     SelectedValue="{value: SelectedCustomerListBox}"
+                     ItemValueBinding="{value: _this}"
+                     ItemTextBinding="{value: Name}"  UITests.Name="selected-customer-list-box"/>
+
         <%--
         <p>{{value: Result}}</p>
 
@@ -28,7 +33,7 @@
             <h4>Calculating...</h4>
         </dot:UpdateProgress>--%>
 
-        <%--<dot:FileUpload UploadedFiles="{value: Files}"  UITests.Name="Files"/>--%>
+        <%--<dot:FileUpload UploadedFiles="{value: Files}" UITests.Name="Files"/>--%>
 
         <dot:GridView DataSource="{value: Customers}" UITests.Name="customers2">
             <Columns>

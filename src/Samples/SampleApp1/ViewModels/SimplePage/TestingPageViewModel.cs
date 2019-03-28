@@ -27,6 +27,8 @@ namespace SampleApp1.ViewModels.SimplePage
             Result = random.Next();
         }
 
+        public CustomerDTO SelectedCustomerListBox { get; set; }
+
         public UploadedFilesCollection Files { get; set; }
 
         public GridViewDataSet<CustomerDTO> Customers { get; set; } = new GridViewDataSet<CustomerDTO>

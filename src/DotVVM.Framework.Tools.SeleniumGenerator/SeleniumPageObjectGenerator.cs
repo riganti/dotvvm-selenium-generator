@@ -196,7 +196,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     .NormalizeWhitespace()
             );
 
-            FileSystemHelpers.WriteFile(seleniumConfiguration.HelperFileFullPath, tree.ToString(), false);
+            FileSystemHelpers.WriteFile(seleniumConfiguration.PageObjectFileFullPath, tree.ToString(), false);
         }
 
         private PageObjectDefinition CreatePageObjectDefinition(
@@ -215,7 +215,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private PageObjectDefinition GetPageObjectDefinition(SeleniumGeneratorConfiguration seleniumConfiguration,
             HashSet<string> masterUsedUniqueSelectors)
         {
-            var pageObjectDefinition = new PageObjectDefinition { Name = seleniumConfiguration.HelperName };
+            var pageObjectDefinition = new PageObjectDefinition { Name = seleniumConfiguration.PageObjectName };
             if (masterUsedUniqueSelectors != null)
             {
                 pageObjectDefinition.ExistingUsedSelectors.UnionWith(masterUsedUniqueSelectors);
