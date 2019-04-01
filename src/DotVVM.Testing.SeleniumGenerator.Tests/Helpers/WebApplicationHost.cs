@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
 using DotVVM.CommandLine.Commands;
-using DotVVM.CommandLine.Commands.Implementation;
 using DotVVM.CommandLine.Core.Metadata;
 using DotVVM.CommandLine.Metadata;
 using Microsoft.CodeAnalysis;
@@ -69,7 +68,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             Environment.CurrentDirectory = webAppDirectory;
         }
 
-        public void ProcessMarkupFile(string markupFilePath)
+        public string ProcessMarkupFile(string markupFilePath)
         {
             if (!initialized)
             {
@@ -77,8 +76,12 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             }
 
             // process markup file
-            var command = new GenerateUiTestStubCommand();
-            command.Handle(new Arguments(new[] { markupFilePath }), metadata);
+
+            // TODO: redo after it's change to console app
+            //var command = new GenerateUiTestStubCommand();
+            //command.Handle(new Arguments(new[] { markupFilePath }), metadata);
+
+            return File.ReadAllText(markupFilePath);
         }
 
         internal void FixReferencedProjectPath(string proxiesCsProjPath)
