@@ -2,7 +2,7 @@
   "version": 1,
   "projectName": "SampleApp1",
   "rootNamespace": "SampleApp1",
-  "uiTestProjectPath": "..\\SampleApp1.Tests",
-  "uiTestProjectRootNamespace": "SampleApp1.Tests",
+  "uiTestProjectPath": null,
+  "uiTestProjectRootNamespace": null,
   "apiClients": []
 }

@@ -1,21 +1,35 @@
-﻿using DotVVM.CommandLine.Core;
-using DotVVM.CommandLine.Core.Metadata;
-using DotVVM.CommandLine.Core.Templates;
-using DotVVM.Framework.Configuration;
+﻿using DotVVM.Framework.Configuration;
 using DotVVM.Framework.Security;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.IO;
+using System.Linq;
+using DotVVM.CommandLine.Core;
+using DotVVM.CommandLine.Core.Arguments;
+using DotVVM.CommandLine.Core.Metadata;
+using DotVVM.CommandLine.Core.Templates;
+using Newtonsoft.Json;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
     public class Program
     {
-        private static readonly string PageObjectsText;
+        private const string PageObjectsText = "PageObjects";
 
         public static void Main(string[] args)
         {
-            var dotvvmProjectMetadata = new DotvvmProjectMetadata();
+            var arguments = new Arguments(args);
+
+            DotvvmProjectMetadata dotvvmProjectMetadata = null;
+            if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase)) {
+
+                dotvvmProjectMetadata = JsonConvert.DeserializeObject<DotvvmProjectMetadata>(args[1]);
+                arguments.Consume(2);
+            }
+            else
+            {
+                Console.WriteLine(@"Provide correct metadata.");
+            }
 
             // make sure the test directory exists
             if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectPath))
@@ -37,7 +51,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }
 
             // generate the test stubs
-            var name = args[0];
+            var name = arguments[0];
             var files = ExpandFileNames(name);
 
             foreach (var file in files)

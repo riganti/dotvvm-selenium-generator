@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
-using DotVVM.CommandLine.Commands;
 using DotVVM.CommandLine.Core.Metadata;
-using DotVVM.CommandLine.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,11 +16,9 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
         private readonly TestContext testContext;
         private readonly string webApplicationTemplatePath;
         private bool initialized;
-        private string workingDirectory;
-        private string webAppName;
-        private string webAppDirectory;
-        private string testProjectName;
-        private string testProjectCsproj;
+        private readonly string workingDirectory;
+        private readonly string webAppDirectory;
+        private readonly string testProjectCsproj;
         private string dotvvmJsonPath;
         private DotvvmProjectMetadata metadata;
 
@@ -38,11 +32,11 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
 
             workingDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
-            webAppName = Path.GetFileName(webApplicationTemplatePath);
+            var webAppName = Path.GetFileName(webApplicationTemplatePath);
             webAppDirectory = Path.Combine(workingDirectory, webAppName);
             dotvvmJsonPath = Path.Combine(webAppDirectory, ".dotvvm.json");
 
-            testProjectName = webAppName + ".Tests";
+            var testProjectName = webAppName + ".Tests";
             TestProjectDirectory = Path.GetFullPath(Path.Combine(webAppDirectory, "..", testProjectName));
             testProjectCsproj = Path.Combine(TestProjectDirectory, testProjectName + ".csproj");
         }
@@ -59,10 +53,11 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             Process.Start("xcopy", $"/E \"{webApplicationTemplatePath}\" \"{webAppDirectory}\"").WaitForExit();
 
             // set test project path in .dotvvm.json
-            var metadataService = new DotvvmProjectMetadataService();
-            metadata = metadataService.LoadFromFile(dotvvmJsonPath);
-            metadata.UITestProjectPath = $"../{testProjectName}";
-            metadata.UITestProjectRootNamespace = testProjectName;
+            // TODO: fix 
+            //var metadataService = new DotvvmProjectMetadataService();
+            //metadata = metadataService.LoadFromFile(dotvvmJsonPath);
+            //metadata.UITestProjectPath = $"../{testProjectName}";
+            //metadata.UITestProjectRootNamespace = testProjectName;
 
             // change current directory
             Environment.CurrentDirectory = webAppDirectory;
