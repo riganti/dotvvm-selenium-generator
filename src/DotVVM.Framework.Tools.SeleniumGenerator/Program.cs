@@ -7,8 +7,8 @@ using System.Linq;
 using DotVVM.CommandLine.Core;
 using DotVVM.CommandLine.Core.Arguments;
 using DotVVM.CommandLine.Core.Metadata;
-using DotVVM.CommandLine.Core.Templates;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -21,7 +21,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             var arguments = new Arguments(args);
 
             DotvvmProjectMetadata dotvvmProjectMetadata = null;
-            if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase)) {
+            if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase))
+            {
 
                 dotvvmProjectMetadata = JsonConvert.DeserializeObject<DotvvmProjectMetadata>(args[1]);
                 arguments.Consume(2);
@@ -31,81 +32,74 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 Console.WriteLine(@"Provide correct metadata.");
             }
 
-            // make sure the test directory exists
-            if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectPath))
-            {
-                var hintProjectName = $"..\\{dotvvmProjectMetadata.ProjectName}.Tests";
-                dotvvmProjectMetadata.UITestProjectPath = ConsoleHelpers.AskForValue($"Enter the path to the test project\n(relative to DotVVM project directory, e.g. '{hintProjectName}'): ", hintProjectName);
-            }
+            IEnumerable<string> controlFiles = new List<string>();
+            IEnumerable<string> viewFiles;
 
-            var testProjectDirectory = dotvvmProjectMetadata.GetUITestProjectFullPath();
-            if (!Directory.Exists(testProjectDirectory))
+            if (arguments[0] != null)
             {
-                GenerateTestProject(testProjectDirectory);
+                viewFiles = GetViewsFiles(arguments);
             }
-
-            // make sure we know the test project namespace
-            if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectRootNamespace))
+            else
             {
-                dotvvmProjectMetadata.UITestProjectRootNamespace = Path.GetFileName(testProjectDirectory);
+                // generate all views and user controls files if no argument was specified
+                controlFiles = GetUserControlFiles(dotvvmProjectMetadata);
+                viewFiles = GetViewFiles(dotvvmProjectMetadata);
             }
 
             // generate the test stubs
-            var name = arguments[0];
-            var files = ExpandFileNames(name);
+            GeneratePageObjects(dotvvmProjectMetadata, controlFiles, viewFiles);
+        }
 
-            foreach (var file in files)
+        private static void GeneratePageObjects(DotvvmProjectMetadata dotvvmProjectMetadata,
+            IEnumerable<string> controlFiles,
+            IEnumerable<string> viewFiles)
+        {
+            var dotvvmConfig = DotvvmConfiguration.CreateDefault(services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+            var generator = new SeleniumPageObjectGenerator();
+
+            var allFiles = controlFiles.Concat(viewFiles);
+
+            foreach (var file in allFiles)
             {
-                Console.WriteLine($"Generating stub for {file}...");
-
-                // determine full type name and target file
-                var relativePath = PathHelpers.GetDothtmlFileRelativePath(dotvvmProjectMetadata, file);
-                var relativeTypeName = $"{PathHelpers.TrimFileExtension(relativePath)}PageObject";
-                var fullTypeName = $"{dotvvmProjectMetadata.UITestProjectRootNamespace}.{PageObjectsText}.{PathHelpers.CreateTypeNameFromPath(relativeTypeName)}";
-                var targetFileName = Path.Combine(dotvvmProjectMetadata.UITestProjectPath, PageObjectsText, relativeTypeName + ".cs");
-
-                //generate the file
-                var generator = new SeleniumPageObjectGenerator();
-                var config = new SeleniumGeneratorConfiguration()
+                if (File.Exists(file))
                 {
-                    TargetNamespace = PathHelpers.GetNamespaceFromFullType(fullTypeName),
-                    PageObjectName = PathHelpers.GetTypeNameFromFullType(fullTypeName),
-                    PageObjectFileFullPath = targetFileName,
-                    ViewFullPath = file
-                };
+                    Console.WriteLine($"Generating stub for {file}...");
 
-                generator.ProcessMarkupFile(
-                    DotvvmConfiguration.CreateDefault(services
-                        => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>()),
-                    config);
+                    // determine full type name and target file
+                    var relativePath = PathHelpers.GetDothtmlFileRelativePath(dotvvmProjectMetadata, file);
+                    var relativeTypeName = $"{PathHelpers.TrimFileExtension(relativePath)}PageObject";
+                    var fullTypeName = $"{dotvvmProjectMetadata.UITestProjectRootNamespace}.{PageObjectsText}.{PathHelpers.CreateTypeNameFromPath(relativeTypeName)}";
+                    var targetFileName = Path.Combine(dotvvmProjectMetadata.UITestProjectPath, PageObjectsText, relativeTypeName + ".cs");
+
+                    var config = GetSeleniumGeneratorConfiguration(fullTypeName, targetFileName, file);
+
+                    GeneratePageObject(generator, dotvvmConfig, config);
+                }
             }
         }
 
-        private static void GenerateTestProject(string projectDirectory)
+        private static void GeneratePageObject(SeleniumPageObjectGenerator generator, DotvvmConfiguration dotvvmConfig, SeleniumGeneratorConfiguration config)
+           => generator.ProcessMarkupFile(dotvvmConfig, config);
+
+        private static IEnumerable<string> GetUserControlFiles(DotvvmProjectMetadata dotvvmProjectMetadata)
+            => Directory.GetFiles(dotvvmProjectMetadata.ProjectDirectory, "*.dotcontrol", SearchOption.AllDirectories);
+
+        private static IEnumerable<string> GetViewFiles(DotvvmProjectMetadata dotvvmProjectMetadata)
+            => Directory.GetFiles(dotvvmProjectMetadata.ProjectDirectory, "*.dothtml", SearchOption.AllDirectories);
+
+        private static IEnumerable<string> GetViewsFiles(Arguments args)
+            => ExpandFileNames(args[0]);
+
+        private static SeleniumGeneratorConfiguration GetSeleniumGeneratorConfiguration(string fullTypeName,
+            string targetFileName, string file)
         {
-            var projectFileName = Path.GetFileName(projectDirectory);
-            var testProjectPath = Path.Combine(projectDirectory, projectFileName + ".csproj");
-            var fileContent = GetProjectFileTextContent();
-
-            FileSystemHelpers.WriteFile(testProjectPath, fileContent);
-
-            CreatePageObjectsDirectory(projectDirectory);
-        }
-
-        private static void CreatePageObjectsDirectory(string projectDirectory)
-        {
-            var objectsDirectory = Path.Combine(projectDirectory, PageObjectsText);
-            if (!Directory.Exists(objectsDirectory))
+            return new SeleniumGeneratorConfiguration()
             {
-                Directory.CreateDirectory(objectsDirectory);
-            }
-        }
-
-        private static string GetProjectFileTextContent()
-        {
-            var projectTemplate = new TestProjectTemplate();
-
-            return projectTemplate.TransformText();
+                TargetNamespace = PathHelpers.GetNamespaceFromFullType(fullTypeName),
+                PageObjectName = PathHelpers.GetTypeNameFromFullType(fullTypeName),
+                PageObjectFileFullPath = targetFileName,
+                ViewFullPath = file
+            };
         }
 
         protected static string[] ExpandFileNames(string name)

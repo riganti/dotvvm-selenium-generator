@@ -37,12 +37,21 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         /// </summary>
         public void AddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            // determine the name
-            var propertyName = DetermineName(pageObject, context);
+            string propertyName;
+
+            var htmlName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
+            if (htmlName == null)
+            {
+                // determine the name
+                propertyName = DetermineName(pageObject, context);
+            }
+            else
+            {
+                propertyName = htmlName;
+            }
 
             // normalize name
             var normalizedName = RemoveNonIdentifierCharacters(propertyName);
-
             // make the name unique
             var uniqueName = MakePropertyNameUnique(context.UsedNames, normalizedName);
 
@@ -50,23 +59,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             context.UniqueName = uniqueName;
 
             // determine the selector
-            string selector;
-            var htmlName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
             if (htmlName == null)
             {
-                selector = RemoveNonIdentifierCharacters(propertyName);
-                selector = RemoveUpperLetters(selector);
-                selector = MakePropertyNameUnique(context.ExistingUsedSelectors, selector);
-
-                AddUITestNameProperty(pageObject, context, selector);
-            }
-            else
-            {
-                selector = htmlName;
+                AddUITestNameProperty(pageObject, context, uniqueName);
             }
 
-            context.ExistingUsedSelectors.Add(selector);
-            context.Selector = selector;
+            context.UsedNames.Add(propertyName);
 
             AddDeclarationsCore(pageObject, context);
         }
@@ -126,7 +124,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         {
             // if selector is set, just read it and don't add data context prefixes
             //var shouldAddDataContextPrefixes = uniqueName == null;
-            var shouldAddDataContextPrefixes = false;
+            var shouldAddDataContextPrefixes = true;
 
             // if not found, use the name properties to determine the name
 
@@ -152,7 +150,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             {
                 uniqueName = htmlNode.TagName;
 
-                // not add dataContext when generating page object for user control
+                // not add DataContext when generating page object for user control
                 shouldAddDataContextPrefixes = false;
             }
 
@@ -162,10 +160,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 uniqueName = typeof(TControl).Name;
             }
 
-            //if (shouldAddDataContextPrefixes)
-            //{
-            //    uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
-            //}
+            if (shouldAddDataContextPrefixes)
+            {
+                uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
+            }
 
             return uniqueName;
         }
@@ -174,10 +172,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         {
             if (dataContextPrefixes.Any())
             {
-                uniqueName = $"{string.Join("", dataContextPrefixes)}{SetFirstLetterUp(uniqueName)}";
+                return $"{string.Join("_", dataContextPrefixes)}_{SetFirstLetterUp(uniqueName)}";
             }
 
-            return uniqueName;
+            return SetFirstLetterUp(uniqueName);
         }
 
         private string SetFirstLetterUp(string uniqueName)
@@ -356,7 +354,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.Selector))
+                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.UniqueName))
                             }))
                         )
                 )
