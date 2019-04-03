@@ -8,14 +8,14 @@
     <div DataContext="{value: Login}">
 
         <p>
-            E-mail: <dot:TextBox Text="{value: Email}" UITests.Name="LoginEmail"/>
+            E-mail: <dot:TextBox Text="{value: Email}"  UITests.Name="Login_Email"/>
         </p>
         <p>
             Password:
-            <dot:TextBox Text="{value: Password}" Type="Password" UITests.Name="LoginPassword"/>
+            <dot:TextBox Text="{value: Password}" Type="Password" UITests.Name="Login_Password"/>
         </p>
         <p>
-            <dot:Button Text="Sign In" Click="{command: _root.SignIn()}" UITests.Name="LoginSignIn"/>
+            <dot:Button Text="Sign In" Click="{command: _root.SignIn()}"  UITests.Name="Login_SignIn"/>
         </p>
 
     </div>
@@ -24,22 +24,22 @@
 
         <p>
             Name:
-            <dot:TextBox Text="{value: Name}" UITests.Name="RegisterName"/>
+            <dot:TextBox Text="{value: Name}" UITests.Name="Register_Name"/>
         </p>
         <p>
             E-mail:
-            <dot:TextBox Text="{value: Email}" UITests.Name="RegisterEmail"/>
+            <dot:TextBox Text="{value: Email}" UITests.Name="Register_Email"/>
         </p>
         <p>
             Password:
-            <dot:TextBox Text="{value: Password}" Type="Password" UITests.Name="RegisterPassword"/>
+            <dot:TextBox Text="{value: Password}" Type="Password" UITests.Name="Register_Password"/>
         </p>
         <p>
             Confirm Password:
-            <dot:TextBox Text="{value: ConfirmPassword}" Type="Password" UITests.Name="RegisterConfirmPassword"/>
+            <dot:TextBox Text="{value: ConfirmPassword}" Type="Password" UITests.Name="Register_ConfirmPassword"/>
         </p>
         <p>
-            <dot:Button Text="Sign Up" Click="{command: _root.SignUp()}" UITests.Name="RegisterSignUp"/>
+            <dot:Button Text="Sign Up" Click="{command: _root.SignUp()}" UITests.Name="Register_SignUp"/>
         </p>
 
     </div>

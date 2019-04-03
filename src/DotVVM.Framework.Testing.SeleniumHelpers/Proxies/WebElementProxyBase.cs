@@ -22,6 +22,16 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             Selector = selector;
         }
 
+        public IWebElement GetWebElement()
+        {
+            return FindElement();
+        }
+
+        public IWebElement GetParentElement()
+        {
+            return FindElement().FindElement(By.XPath("./.."));
+        }
+
         protected IWebElement FindElement()
         {
             var elementsBySelector = GetElementsForCurrentSelector();

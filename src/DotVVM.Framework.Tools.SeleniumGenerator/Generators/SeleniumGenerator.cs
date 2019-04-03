@@ -61,7 +61,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             // determine the selector
             if (htmlName == null)
             {
+                context.Selector = uniqueName;
                 AddUITestNameProperty(pageObject, context, uniqueName);
+            }
+            else
+            {
+                context.Selector = htmlName;
             }
 
             context.UsedNames.Add(propertyName);
@@ -354,7 +359,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.UniqueName))
+                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.UniqueName, context.Selector))
                             }))
                         )
                 )
@@ -362,7 +367,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         }
 
         // TODO: decide if proxy should be generated or using property like this
-        protected StatementSyntax GenerateInitializerForControl(string propertyName, string typeName)
+        protected StatementSyntax GenerateInitializerForControl(string propertyName, string selector, string typeName)
         {
             return SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
@@ -373,7 +378,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         {
                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
                             SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                            SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName))
+                            SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName, selector))
                         })))
                 )
             );
@@ -396,7 +401,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             );
         }
 
-        private ObjectCreationExpressionSyntax GetPathSelectorObjectInitialization(string propertyName)
+        private ObjectCreationExpressionSyntax GetPathSelectorObjectInitialization(string contextUniqueName,
+            string propertyName)
         {
             return SyntaxFactory.ObjectCreationExpression(
                     SyntaxFactory.IdentifierName("PathSelector"))

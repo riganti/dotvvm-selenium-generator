@@ -12,20 +12,20 @@
     </style>
 
     <div DataContext="{value: NewTask}">
-        <dot:TextBox Text="{value: Text}"  UITests.Name="NewTaskText"/>
-        <dot:Button Text="Add Task" Click="{command: _root.AddTask()}"  UITests.Name="NewTaskAddTask"/>
+        <dot:TextBox Text="{value: Text}" UITests.Name="NewTask_Text"/>
+        <dot:Button Text="Add Task" Click="{command: _root.AddTask()}" UITests.Name="NewTask_AddTask"/>
     </div>
 
     <table>
         <dot:Repeater DataSource="{value: Tasks}" WrapperTagName="tbody" UITests.Name="Tasks">
             <tr>
                 <td class-completed="{value: IsCompleted}">
-                    {{value: Text}}
+                    <dot:Literal Text="{value: Text}"  UITests.Name="Text Text"/>
                 </td>
                 <td>
                     <dot:LinkButton Text="Finished" 
                                     Visible="{value: !IsCompleted}"
-                                    Click="{command: _root.SetCompleted(_this)}"  UITests.Name="Finished"/>
+                                    Click="{command: _root.SetCompleted(_this)}" UITests.Name="Finished"/>
                 </td>
             </tr>
         </dot:Repeater>

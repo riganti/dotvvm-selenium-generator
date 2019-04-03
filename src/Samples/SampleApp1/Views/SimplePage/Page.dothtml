@@ -16,38 +16,38 @@
     <div>
         <p>
             Type:
-            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person"  UITests.Name="person"/>
-            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company"  UITests.Name="company"/>
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person" UITests.Name="Person"/>
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company"  UITests.Name="Company"/>
         </p>
         <p DataContext="{value: Name}">
             First Name:
-            <dot:TextBox Text="{value: FirstName}" Validator.Value="{value: FirstName}"  UITests.Name="first-name"/>
+            <dot:TextBox Text="{value: FirstName}" Validator.Value="{value: FirstName}" UITests.Name="Name_FirstName"/>
             Last Name:
-            <dot:TextBox Text="{value: LastName}" Validator.Value="{value: LastName}"  UITests.Name="last-name"/>
+            <dot:TextBox Text="{value: LastName}" Validator.Value="{value: LastName}" UITests.Name="Name_LastName"/>
         </p>
 
-        <dot:Button Text="Click" Click="{command: null}" Validation.Target="{value: Name}" Validation.Enabled="true"  UITests.Name="click"/>
+        <dot:Button Text="Click" Click="{command: null}" Validation.Target="{value: Name}" Validation.Enabled="true" UITests.Name="Click"/>
 
         <p>
             Address:
-            <dot:TextBox Text="{value: Address}"  UITests.Name="address"/>
+            <dot:TextBox Text="{value: Address}"  UITests.Name="Address"/>
         </p>
         <p>
-            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}"  UITests.Name="is-eu-vat-payer"/>
+            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}"  UITests.Name="IsEuVatPayer"/>
         </p>
         <p>
             Country Code:
-            <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}"  UITests.Name="country-code-selected"/>
+            <dot:ComboBox DataSource="{value: Countries}" SelectedValue="{value: CountryCode}" UITests.Name="CountryCode"/>
         </p>
         <p>
-            <dot:Button Text="Create Company" Click="{command: CreateCompany()}"  UITests.Name="create-company"/>
-            <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}"  UITests.Name="reset-form"/>
+            <dot:Button Text="Create Company" Click="{command: CreateCompany()}"  UITests.Name="CreateCompany"/>
+            <dot:LinkButton Text="Reset Form" Click="{command: ResetForm()}"  UITests.Name="ResetForm"/>
         </p>
     </div>
 
-    <dot:Literal Text="{value: StatusMessage}" UITests.Name="status-message"/>
+    <dot:Literal Text="{value: StatusMessage}" UITests.Name="StatusMessage"/>
 
-    <dot:ValidationSummary IncludeErrorsFromChildren="true"  UITests.Name="validation-summary"/>
+    <dot:ValidationSummary IncludeErrorsFromChildren="true"  UITests.Name="ValidationSummary"/>
 
 
 </body>

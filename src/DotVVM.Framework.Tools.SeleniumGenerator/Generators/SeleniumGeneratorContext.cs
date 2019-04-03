@@ -8,6 +8,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         public ResolvedControl Control { get; set; }
 
         public string UniqueName { get; set; }
+        public string Selector { get; set; }
 
         public HashSet<string> UsedNames { get; set; } = new HashSet<string>();
 
