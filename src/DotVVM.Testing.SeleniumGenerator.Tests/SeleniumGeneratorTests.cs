@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using DotVVM.Framework.Testing.SeleniumHelpers.Proxies;
 using DotVVM.Testing.SeleniumGenerator.Tests.Helpers;
@@ -26,7 +24,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
 
 
         [TestMethod]
-        public async Task SimplePageTest()
+        public async Task SimplePage_CheckGeneratedProperties()
         {
             using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
             {
@@ -38,15 +36,34 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
 
                 // verify the class
                 var pageObject = compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
-                pageObject.AssertPublicProperty(typeof(RadioButtonProxy), "ModelsAddressTypePerson");
-                pageObject.AssertPublicProperty(typeof(RadioButtonProxy), "ModelsAddressTypeCompany");
-                pageObject.AssertPublicProperty(typeof(TextBoxProxy), "Name");
+                pageObject.AssertPublicProperty(typeof(RadioButtonProxy), "Person");
+                pageObject.AssertPublicProperty(typeof(RadioButtonProxy), "Company");
+                pageObject.AssertPublicProperty(typeof(TextBoxProxy), "Name_FirstName");
+                pageObject.AssertPublicProperty(typeof(TextBoxProxy), "Name_LastName");
+                pageObject.AssertPublicProperty(typeof(ButtonProxy), "Click");
                 pageObject.AssertPublicProperty(typeof(TextBoxProxy), "Address");
+                pageObject.AssertPublicProperty(typeof(ComboBoxProxy), "CountryCode");
                 pageObject.AssertPublicProperty(typeof(CheckBoxProxy), "IsEuVatPayer");
                 pageObject.AssertPublicProperty(typeof(ButtonProxy), "CreateCompany");
                 pageObject.AssertPublicProperty(typeof(LinkButtonProxy), "ResetForm");
                 pageObject.AssertPublicProperty(typeof(LiteralProxy), "StatusMessage");
                 pageObject.AssertPublicProperty(typeof(ValidationSummaryProxy), "ValidationSummary");
+            }
+        }
+
+        [TestMethod]
+        public async Task SimplePage_CheckGeneratedUiNames()
+        {
+            using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
+            {
+                workspace.ProcessMarkupFile("Views/SimplePage/Page.dothtml");
+
+                // compile project
+                workspace.FixReferencedProjectPath(proxiesCsProjPath);
+                var compilation = await workspace.CompileAsync();
+
+                // verify the class
+                var pageObject = compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
             }
         }
     }

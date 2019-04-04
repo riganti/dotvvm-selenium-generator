@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
+using DotVVM.CommandLine.Commands.Logic.SeleniumGenerator;
+using DotVVM.CommandLine.Core.Arguments;
 using DotVVM.CommandLine.Core.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,8 +20,9 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
         private bool initialized;
         private readonly string workingDirectory;
         private readonly string webAppDirectory;
+        private readonly string testProjectName;
         private readonly string testProjectCsproj;
-        private string dotvvmJsonPath;
+        private readonly string dotvvmJsonPath;
         private DotvvmProjectMetadata metadata;
 
         public string TestProjectDirectory { get; private set; }
@@ -36,7 +39,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             webAppDirectory = Path.Combine(workingDirectory, webAppName);
             dotvvmJsonPath = Path.Combine(webAppDirectory, ".dotvvm.json");
 
-            var testProjectName = webAppName + ".Tests";
+            testProjectName = webAppName + ".Tests";
             TestProjectDirectory = Path.GetFullPath(Path.Combine(webAppDirectory, "..", testProjectName));
             testProjectCsproj = Path.Combine(TestProjectDirectory, testProjectName + ".csproj");
         }
@@ -50,14 +53,14 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             Directory.CreateDirectory(webAppDirectory);
 
             // copy application in the working directory
-            Process.Start("xcopy", $"/E \"{webApplicationTemplatePath}\" \"{webAppDirectory}\"").WaitForExit();
+            Process.Start("xcopy", $"/E \"{webApplicationTemplatePath}\" \"{webAppDirectory}\"")?.WaitForExit();
 
             // set test project path in .dotvvm.json
             // TODO: fix 
-            //var metadataService = new DotvvmProjectMetadataService();
-            //metadata = metadataService.LoadFromFile(dotvvmJsonPath);
-            //metadata.UITestProjectPath = $"../{testProjectName}";
-            //metadata.UITestProjectRootNamespace = testProjectName;
+            var metadataService = new DotvvmProjectMetadataService();
+            metadata = metadataService.LoadFromFile(dotvvmJsonPath);
+            metadata.UITestProjectPath = $"../{testProjectName}";
+            metadata.UITestProjectRootNamespace = testProjectName;
 
             // change current directory
             Environment.CurrentDirectory = webAppDirectory;
@@ -70,11 +73,19 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
                 Initialize();
             }
 
-            // process markup file
+            var args = new Arguments(new[] {markupFilePath});
 
-            // TODO: redo after it's change to console app
-            //var command = new GenerateUiTestStubCommand();
-            //command.Handle(new Arguments(new[] { markupFilePath }), metadata);
+            try
+            {
+                // process markup file
+                SeleniumGeneratorLauncher.Start(args, metadata);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
 
             return File.ReadAllText(markupFilePath);
         }

@@ -48,6 +48,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
             // generate the test stubs
             GeneratePageObjects(dotvvmProjectMetadata, controlFiles, viewFiles);
+
+            Console.WriteLine(@"#$ Exit 0 - DotVVM Selenium Generator Ended");
+            Environment.Exit(0);
         }
 
         private static void GeneratePageObjects(DotvvmProjectMetadata dotvvmProjectMetadata,
