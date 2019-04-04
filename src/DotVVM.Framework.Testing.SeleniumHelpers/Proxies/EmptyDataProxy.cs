@@ -18,7 +18,7 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             catch (NoSuchElementException e)
             {
                 Console.WriteLine(@"EmptyData is not visible" + e);
-                return false;
+                throw;
             }
         }
     }

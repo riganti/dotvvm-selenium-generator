@@ -51,10 +51,5 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
 
             return returnList;
         }
-
-        //public TItemHelper GetLastItem()
-        //{
-
-        //}
     }
 }

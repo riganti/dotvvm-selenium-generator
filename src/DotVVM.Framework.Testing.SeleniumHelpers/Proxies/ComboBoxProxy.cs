@@ -10,26 +10,23 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         {
         }
 
-        public bool SelectPlaceholder()
+        public void SelectPlaceholder()
         {
-            return SelectOptionByValue("");
+            SelectOptionByValue("");
         }
 
-        public virtual bool SelectOptionByValue(string value)
+        public virtual void SelectOptionByValue(string value)
         {
             var selectElement = GetSelectElement();
-
             try
             {
                 selectElement.SelectByValue(value);
             }
-            catch (NoSuchElementException e)
+            catch (NoSuchElementException)
             {
                 Console.WriteLine($@"ComboBox doesn't have option with value - {value}.");
-                return false;
+                throw;
             }
-
-            return true;
         }
     }
 }   

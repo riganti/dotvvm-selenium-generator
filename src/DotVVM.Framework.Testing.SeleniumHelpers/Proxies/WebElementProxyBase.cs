@@ -118,13 +118,21 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
             catch (NoSuchElementException e)
             {
                 Console.WriteLine(@"Element is not in page. " + e);
-                return false;
+                throw;
             }
         }
 
         public virtual bool IsEnabled()
         {
-            return FindElement().Enabled;
+            try
+            {
+                return FindElement().Enabled;
+            }
+            catch (NoSuchElementException e)
+            {
+                Console.WriteLine(@"Element is not in page. " + e);
+                throw;
+            }
         }
     }
 }
