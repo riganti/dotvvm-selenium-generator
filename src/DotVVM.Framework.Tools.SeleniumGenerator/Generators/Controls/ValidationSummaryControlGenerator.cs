@@ -10,7 +10,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.ValidationSummaryProxy";
+            const string type = "ValidationSummaryProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

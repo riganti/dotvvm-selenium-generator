@@ -176,15 +176,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         {
             var tree = CSharpSyntaxTree.Create(
                 SyntaxFactory.CompilationUnit()
-                    .WithUsings(SyntaxFactory.SingletonList(
-                        SyntaxFactory.UsingDirective(
-                            SyntaxFactory.QualifiedName(
-                                SyntaxFactory.QualifiedName(
-                                    SyntaxFactory.QualifiedName(
-                                        SyntaxFactory.IdentifierName("DotVVM"),
-                                        SyntaxFactory.IdentifierName("Framework")),
-                                    SyntaxFactory.IdentifierName("Testing")),
-                                SyntaxFactory.IdentifierName("SeleniumHelpers")))))
+                    .WithUsings(GetSeleniumHelpersUsingList())
                     .WithMembers(SyntaxFactory.List(new MemberDeclarationSyntax[]
                     {
                         SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(seleniumConfiguration.TargetNamespace))
@@ -197,6 +189,32 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             );
 
             FileSystemHelpers.WriteFile(seleniumConfiguration.PageObjectFileFullPath, tree.ToString(), false);
+        }
+
+        private static SyntaxList<UsingDirectiveSyntax> GetSeleniumHelpersUsingList()
+        {
+            return new SyntaxList<UsingDirectiveSyntax>(
+                new[]
+                {
+                    SyntaxFactory.UsingDirective(
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.QualifiedName(
+                                SyntaxFactory.QualifiedName(
+                                    SyntaxFactory.IdentifierName("DotVVM"),
+                                    SyntaxFactory.IdentifierName("Framework")),
+                                SyntaxFactory.IdentifierName("Testing")),
+                            SyntaxFactory.IdentifierName("SeleniumHelpers"))),
+                    SyntaxFactory.UsingDirective(
+                        SyntaxFactory.QualifiedName(
+                            SyntaxFactory.QualifiedName(
+                                SyntaxFactory.QualifiedName(
+                                    SyntaxFactory.QualifiedName(
+                                        SyntaxFactory.IdentifierName("DotVVM"),
+                                        SyntaxFactory.IdentifierName("Framework")),
+                                    SyntaxFactory.IdentifierName("Testing")),
+                                SyntaxFactory.IdentifierName("SeleniumHelpers")),
+                            SyntaxFactory.IdentifierName("Proxies")))
+                });
         }
 
         private PageObjectDefinition CreatePageObjectDefinition(
@@ -252,10 +270,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("webDriver"))
                              .WithType(SyntaxFactory.ParseTypeName("OpenQA.Selenium.IWebDriver")),
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("parentHelper"))
-                             .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.SeleniumHelperBase"))
+                             .WithType(SyntaxFactory.ParseTypeName("SeleniumHelperBase"))
                              .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null"))),
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("parentSelector"))
-                             .WithType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.PathSelector"))
+                             .WithType(SyntaxFactory.ParseTypeName("PathSelector"))
                              .WithDefault(SyntaxFactory.EqualsValueClause(SyntaxFactory.IdentifierName("null")))
             }));
         }
@@ -279,7 +297,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         {
             return SyntaxFactory.BaseList(SyntaxFactory.SeparatedList<BaseTypeSyntax>(new[]
             {
-                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("DotVVM.Framework.Testing.SeleniumHelpers.SeleniumHelperBase"))
+                SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("SeleniumHelperBase"))
             }));
         }
 

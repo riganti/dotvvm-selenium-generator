@@ -11,7 +11,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.UpdateProgressProxy";
+            const string type = "UpdateProgressProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

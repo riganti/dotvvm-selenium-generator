@@ -27,7 +27,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate property
-                var type = $"{DefaultNamespace}.RepeaterProxy";
+                const string type = "RepeaterProxy";
                 AddGenericPageObjectProperties(pageObject, context, type, itemHelperName);
             }
         }

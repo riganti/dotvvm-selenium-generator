@@ -11,7 +11,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => false;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.DataPagerProxy";
+            const string type = "DataPagerProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

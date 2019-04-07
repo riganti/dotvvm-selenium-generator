@@ -9,7 +9,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.RadioButtonProxy";
+            const string type = "RadioButtonProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

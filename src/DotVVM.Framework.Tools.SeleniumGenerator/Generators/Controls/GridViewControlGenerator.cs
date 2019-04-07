@@ -25,7 +25,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate proxy
-                var type = $"{DefaultNamespace}.GridViewProxy";
+                const string type = "GridViewProxy";
                 AddGenericPageObjectProperties(pageObject, context, type, itemHelperName);
             }
         }

@@ -14,7 +14,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.EmptyDataProxy";
+            const string type = "EmptyDataProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

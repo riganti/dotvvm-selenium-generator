@@ -28,7 +28,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.LiteralProxy";
+            const string type = "LiteralProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

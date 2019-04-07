@@ -10,7 +10,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.ListBoxProxy";
+            const string type = "ListBoxProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

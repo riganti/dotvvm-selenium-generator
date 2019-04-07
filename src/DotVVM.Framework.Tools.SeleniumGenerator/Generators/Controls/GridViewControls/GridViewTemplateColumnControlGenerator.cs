@@ -21,7 +21,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewC
                 pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate property
-                var type = $"{DefaultNamespace}.GridViewColumns.GridViewTemplateColumnProxy";
+                const string type = "GridViewColumns.GridViewTemplateColumnProxy";
 
                 pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, itemHelperName));
                 pageObject.ConstructorStatements.Add(GenerateInitializerForTemplate(context.UniqueName, itemHelperName));

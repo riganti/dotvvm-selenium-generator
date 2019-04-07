@@ -10,7 +10,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanUseControlContentForName => true;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.RouteLinkProxy";
+            const string type = "RouteLinkProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

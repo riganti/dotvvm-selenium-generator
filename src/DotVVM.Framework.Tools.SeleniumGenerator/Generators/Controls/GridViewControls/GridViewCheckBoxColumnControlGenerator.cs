@@ -10,7 +10,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewC
 
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            var type = $"{DefaultNamespace}.GridViewColumns.GridViewCheckBoxColumnProxy";
+            const string type = "GridViewColumns.GridViewCheckBoxColumnProxy";
             AddPageObjectProperties(pageObject, context, type);
         }
     }

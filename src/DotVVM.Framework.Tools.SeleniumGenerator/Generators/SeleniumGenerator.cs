@@ -17,8 +17,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
     public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator /*where TControl : DotvvmControl*/
     {
-        protected const string DefaultNamespace = "DotVVM.Framework.Testing.SeleniumHelpers.Proxies";
-
         /// <summary>
         /// Gets a list of properties that can be used to determine the control name.
         /// </summary>
