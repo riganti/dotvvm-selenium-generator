@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.CommandLine.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.CommandLine", "..\dotvvm\src\DotVVM.CommandLine\DotVVM.CommandLine.csproj", "{D79CA0A5-711E-4D80-9485-E5E2CD88B349}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.Utils.ConfigurationHost", "..\dotvvm\src\DotVVM.Utils.ConfigurationHost\DotVVM.Utils.ConfigurationHost.csproj", "{541201DF-4D92-4F74-A803-6387EDF4F9DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Release|Any CPU.Build.0 = Release|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

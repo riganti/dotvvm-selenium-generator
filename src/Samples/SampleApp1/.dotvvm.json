@@ -2,7 +2,10 @@
   "version": 1,
   "projectName": "SampleApp1",
   "rootNamespace": "SampleApp1",
-  "uiTestProjectPath": null,
-  "uiTestProjectRootNamespace": null,
+  "uiTestProjectPath": "..\\SampleApp1.Tests",
+  "uiTestProjectRootNamespace": "SampleApp1.Tests",
+  "metadataFilePath": "C:\\Users\\Filip\\source\\repos\\selenium-generator\\dotvvm-selenium-generator\\src\\Samples\\SampleApp1\\.dotvvm.json",
+  "projectDirectory": "C:\\Users\\Filip\\source\\repos\\selenium-generator\\dotvvm-selenium-generator\\src\\Samples\\SampleApp1",
+  "webAssemblyPath": null,
   "apiClients": []
 }

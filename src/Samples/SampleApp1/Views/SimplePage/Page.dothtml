@@ -16,7 +16,7 @@
     <div>
         <p>
             Type:
-            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person" UITests.Name="Person"/>
+            <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Person}" Text="Person"  UITests.Name="Person"/>
             <dot:RadioButton CheckedItem="{value: AddressType}" CheckedValue="{value: Models.AddressType.Company}" Text="Company"  UITests.Name="Company"/>
         </p>
         <p DataContext="{value: Name}">
@@ -33,7 +33,7 @@
             <dot:TextBox Text="{value: Address}"  UITests.Name="Address"/>
         </p>
         <p>
-            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}"  UITests.Name="IsEuVatPayer"/>
+            <dot:CheckBox Text="Registered EU VAT Subject" Checked="{value: IsEuVatPayer}" UITests.Name="IsEuVatPayer"/>
         </p>
         <p>
             Country Code:
@@ -45,7 +45,7 @@
         </p>
     </div>
 
-    <dot:Literal Text="{value: StatusMessage}" UITests.Name="StatusMessage"/>
+    <dot:Literal Text="{value: StatusMessage}"  UITests.Name="StatusMessage"/>
 
     <dot:ValidationSummary IncludeErrorsFromChildren="true"  UITests.Name="ValidationSummary"/>
 

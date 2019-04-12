@@ -9,6 +9,8 @@ using DotVVM.CommandLine.Core.Arguments;
 using DotVVM.CommandLine.Core.Metadata;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using DotVVM.Utils.ConfigurationHost.Initialization;
+using System.Reflection;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -23,7 +25,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             DotvvmProjectMetadata dotvvmProjectMetadata = null;
             if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase))
             {
-
                 dotvvmProjectMetadata = JsonConvert.DeserializeObject<DotvvmProjectMetadata>(args[1]);
                 arguments.Consume(2);
             }
@@ -32,22 +33,26 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 Console.WriteLine(@"Provide correct metadata.");
             }
 
+            var config = ConfigurationHost.InitDotVVM(Assembly.LoadFile(dotvvmProjectMetadata.WebAssemblyPath),
+                dotvvmProjectMetadata.ProjectDirectory,
+                services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+
             IEnumerable<string> controlFiles = new List<string>();
             IEnumerable<string> viewFiles;
 
             if (arguments[0] != null)
             {
-                viewFiles = GetViewsFiles(arguments);
+                viewFiles = GetViewsFiles(new[] { arguments[0] });
             }
             else
             {
                 // generate all views and user controls files if no argument was specified
-                controlFiles = GetUserControlFiles(dotvvmProjectMetadata);
-                viewFiles = GetViewFiles(dotvvmProjectMetadata);
+                viewFiles = config.RouteTable.Where(b => b.VirtualPath != null).Select(r => r.VirtualPath);
+                controlFiles = config.Markup.Controls.Where(b => b.Src != null).Select(c => c.Src);
             }
 
             // generate the test stubs
-            GeneratePageObjects(dotvvmProjectMetadata, controlFiles, viewFiles);
+            GeneratePageObjects(dotvvmProjectMetadata, controlFiles, viewFiles, config);
 
             Console.WriteLine(@"#$ Exit 0 - DotVVM Selenium Generator Ended");
             Environment.Exit(0);
@@ -55,12 +60,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private static void GeneratePageObjects(DotvvmProjectMetadata dotvvmProjectMetadata,
             IEnumerable<string> controlFiles,
-            IEnumerable<string> viewFiles)
+            IEnumerable<string> viewFiles,
+            DotvvmConfiguration dotvvmConfig)
         {
-            var dotvvmConfig = DotvvmConfiguration.CreateDefault(services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
             var generator = new SeleniumPageObjectGenerator();
 
-            var allFiles = controlFiles.Concat(viewFiles);
+            var allFiles = controlFiles.Concat(viewFiles).Distinct();
 
             foreach (var file in allFiles)
             {
@@ -84,14 +89,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private static void GeneratePageObject(SeleniumPageObjectGenerator generator, DotvvmConfiguration dotvvmConfig, SeleniumGeneratorConfiguration config)
            => generator.ProcessMarkupFile(dotvvmConfig, config);
 
-        private static IEnumerable<string> GetUserControlFiles(DotvvmProjectMetadata dotvvmProjectMetadata)
-            => Directory.GetFiles(dotvvmProjectMetadata.ProjectDirectory, "*.dotcontrol", SearchOption.AllDirectories);
-
-        private static IEnumerable<string> GetViewFiles(DotvvmProjectMetadata dotvvmProjectMetadata)
-            => Directory.GetFiles(dotvvmProjectMetadata.ProjectDirectory, "*.dothtml", SearchOption.AllDirectories);
-
-        private static IEnumerable<string> GetViewsFiles(Arguments args)
-            => ExpandFileNames(args[0]);
+        private static IEnumerable<string> GetViewsFiles(IEnumerable<string> filePaths)
+        {
+            return filePaths.Select(file => ExpandFileName(file));
+        }
 
         private static SeleniumGeneratorConfiguration GetSeleniumGeneratorConfiguration(string fullTypeName,
             string targetFileName, string file)
@@ -105,10 +106,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             };
         }
 
-        protected static string[] ExpandFileNames(string name)
+        protected static string ExpandFileName(string name)
         {
             // TODO: add wildcard support
-            return new[] { Path.GetFullPath(name) };
+            return Path.GetFullPath(name);
         }
     }
 }
