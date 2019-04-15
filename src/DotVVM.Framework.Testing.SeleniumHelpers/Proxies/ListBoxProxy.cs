@@ -7,7 +7,5 @@ namespace DotVVM.Framework.Testing.SeleniumHelpers.Proxies
         public ListBoxProxy(SeleniumHelperBase helper, PathSelector selector) : base(helper, selector)
         {
         }
-
-
     }
 }
