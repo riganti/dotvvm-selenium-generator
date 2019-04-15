@@ -78,7 +78,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             try
             {
                 // process markup file
-                SeleniumGeneratorLauncher.Start(args, metadata);
+                //SeleniumGeneratorLauncher.Start(args, metadata);
             }
             catch (Exception e)
             {

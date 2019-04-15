@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.CommandLine.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.CommandLine", "..\dotvvm\src\DotVVM.CommandLine\DotVVM.CommandLine.csproj", "{D79CA0A5-711E-4D80-9485-E5E2CD88B349}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.Utils.ConfigurationHost", "..\dotvvm\src\DotVVM.Utils.ConfigurationHost\DotVVM.Utils.ConfigurationHost.csproj", "{541201DF-4D92-4F74-A803-6387EDF4F9DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{92E5172E-6296-4FA3-8C99-754B332099D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +71,10 @@ Global
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349}.Release|Any CPU.Build.0 = Release|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +88,7 @@ Global
 		{BA64EE09-9078-4D32-BD9E-48CC04D87D73} = {B2FE1FE1-F778-4630-B1E8-ACDC1D46F69C}
 		{F7875F7A-D262-48AD-8922-8A42EE13FF69} = {DA217F52-F86E-4DEA-92EB-9CFAE8216CD0}
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349} = {DA217F52-F86E-4DEA-92EB-9CFAE8216CD0}
+		{541201DF-4D92-4F74-A803-6387EDF4F9DD} = {92E5172E-6296-4FA3-8C99-754B332099D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F531FEB-3515-428B-9DBD-FB81D363B433}

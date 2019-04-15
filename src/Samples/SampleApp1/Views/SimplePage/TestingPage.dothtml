@@ -17,7 +17,7 @@
             <p>Empty</p>
         </dot:EmptyData>
 
-        <dot:EmptyData DataSource="{value: Customers}" UITests.Name="CustomersXXX">
+        <dot:EmptyData DataSource="{value: Customers}" UITests.Name="blabla">
             <p>Empty</p>
         </dot:EmptyData>
 
@@ -29,11 +29,11 @@
         <%--
         <p>{{value: Result}}</p>
 
-        <dot:UpdateProgress>
+        <dot:UpdateProgress>s
             <h4>Calculating...</h4>
         </dot:UpdateProgress>--%>
 
-        <%--<dot:FileUpload UploadedFiles="{value: Files}" UITests.Name="Files"/>--%>
+        <dot:FileUpload UploadedFiles="{value: Files}" UITests.Name="Files"  />
 
         <dot:GridView DataSource="{value: Customers}" UITests.Name="Customers2">
             <Columns>
