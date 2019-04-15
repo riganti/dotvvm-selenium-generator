@@ -21,22 +21,24 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
     {
         public void ProcessMarkupFile(DotvvmConfiguration dotvvmConfiguration, SeleniumGeneratorConfiguration seleniumConfiguration)
         {
-            // resolve control tree
             var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath, dotvvmConfiguration);
 
+            // get all ui tests selectors used in current view
             var usedSelectors = GetUsedSelectors(viewTree);
 
             // resolve master pages of current page
             var masterPageObjectDefinitions = ResolveMasterPages(dotvvmConfiguration, seleniumConfiguration, viewTree);
 
+            // union used unique names across all master pages and current view
             var allUsedNames = UnionUsedUniqueNames(masterPageObjectDefinitions, usedSelectors);
 
+            // get content of page object of current view
             var pageObject = CreatePageObjectDefinition(seleniumConfiguration, viewTree, allUsedNames);
 
             // combine all master page objects with current page object so we can generate page object class for all proxies
             pageObject = CombineViewHelperDefinitions(pageObject, masterPageObjectDefinitions);
 
-            // generate the class
+            // generate the page object class
             GeneratePageObjectClass(seleniumConfiguration, pageObject);
 
             // update view markup file
@@ -54,7 +56,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private HashSet<string> GetUsedSelectors(IAbstractTreeRoot viewTree)
         {
             // traverse the tree
-            var visitor = new SeleniumSelectorsFinderVisitor();
+            var visitor = new SeleniumSelectorFinderVisitor();
             visitor.VisitView((ResolvedTreeRoot)viewTree);
             return visitor.GetResult();
         }

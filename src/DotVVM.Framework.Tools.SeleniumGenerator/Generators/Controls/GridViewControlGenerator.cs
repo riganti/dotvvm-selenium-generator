@@ -18,15 +18,15 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
             {
                 var template = (ResolvedPropertyControlCollection) columnsTemplate;
 
-                // generate child helper class
-                var itemHelperName = context.UniqueName + "GridViewPageObject";
-                context.Visitor.PushScope(new PageObjectDefinition { Name = itemHelperName });
+                // generate child page object class
+                var itemPageObjectName = context.UniqueName + "GridViewPageObject";
+                context.Visitor.PushScope(new PageObjectDefinition { Name = itemPageObjectName });
                 context.Visitor.VisitPropertyControlCollection(template);
                 pageObject.Children.Add(context.Visitor.PopScope());
 
                 // generate proxy
                 const string type = "GridViewProxy";
-                AddGenericPageObjectProperties(pageObject, context, type, itemHelperName);
+                AddGenericPageObjectProperties(pageObject, context, type, itemPageObjectName);
             }
         }
     }

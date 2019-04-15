@@ -21,7 +21,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
                 var template = (ResolvedPropertyTemplate) itemTemplate;
 
                 // generate child helper class
-                var itemHelperName = context.UniqueName + "RepeaterHelper";
+                var itemHelperName = context.UniqueName + "RepeaterPageObject";
                 context.Visitor.PushScope(new PageObjectDefinition { Name = itemHelperName });
                 context.Visitor.VisitPropertyTemplate(template);
                 pageObject.Children.Add(context.Visitor.PopScope());

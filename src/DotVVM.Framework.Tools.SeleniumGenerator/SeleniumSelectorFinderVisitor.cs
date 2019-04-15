@@ -5,7 +5,7 @@ using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
-    public class SeleniumSelectorsFinderVisitor : ResolvedControlTreeVisitor
+    public class SeleniumSelectorFinderVisitor : ResolvedControlTreeVisitor
     {
         private readonly HashSet<string> selectors = new HashSet<string>();
 
