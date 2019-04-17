@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using DotVVM.Utils.ConfigurationHost.Initialization;
 using System.Reflection;
+using DotVVM.CommandLine.Core.Templates;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -31,7 +32,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             else
             {
                 Console.WriteLine(@"Provide correct metadata.");
+                Environment.Exit(1);
             }
+
+            ResolveTestProject(dotvvmProjectMetadata);
+            CreatePageObjectsDirectory(dotvvmProjectMetadata.GetUITestProjectFullPath());
+
 
             var config = ConfigurationHost.InitDotVVM(Assembly.LoadFile(dotvvmProjectMetadata.WebAssemblyPath),
                 dotvvmProjectMetadata.ProjectDirectory,
@@ -91,7 +97,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private static IEnumerable<string> GetViewsFiles(IEnumerable<string> filePaths)
         {
-            return filePaths.Select(file => ExpandFileName(file));
+            return filePaths.Select(ExpandFileName);
         }
 
         private static SeleniumGeneratorConfiguration GetSeleniumGeneratorConfiguration(string fullTypeName,
@@ -110,6 +116,60 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         {
             // TODO: add wildcard support
             return Path.GetFullPath(name);
+        }
+
+        private static void ResolveTestProject(DotvvmProjectMetadata dotvvmProjectMetadata)
+        {
+            var metadataService = new DotvvmProjectMetadataService();
+
+            // make sure the test directory exists
+            if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectPath))
+            {
+                var hintProjectName = $"..\\{dotvvmProjectMetadata.ProjectName}.Tests";
+                dotvvmProjectMetadata.UITestProjectPath = ConsoleHelpers.AskForValue(
+                    $"Enter the path to the test project\n(relative to DotVVM project directory, e.g. '{hintProjectName}'): ",
+                    hintProjectName);
+            }
+
+            var testProjectDirectory = dotvvmProjectMetadata.GetUITestProjectFullPath();
+            if (!Directory.Exists(testProjectDirectory))
+            {
+                GenerateTestProject(testProjectDirectory);
+            }
+
+            // make sure we know the test project namespace
+            if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectRootNamespace))
+            {
+                dotvvmProjectMetadata.UITestProjectRootNamespace = Path.GetFileName(testProjectDirectory);
+            }
+
+            // save the metadata
+            metadataService.Save(dotvvmProjectMetadata);
+        }
+
+        private static void GenerateTestProject(string projectDirectory)
+        {
+            var projectFileName = Path.GetFileName(projectDirectory);
+            var testProjectPath = Path.Combine(projectDirectory, projectFileName + ".csproj");
+            var fileContent = GetProjectFileTextContent();
+
+            FileSystemHelpers.WriteFile(testProjectPath, fileContent);
+        }
+
+        private static void CreatePageObjectsDirectory(string projectDirectory)
+        {
+            var objectsDirectory = Path.Combine(projectDirectory, PageObjectsText);
+            if (!Directory.Exists(objectsDirectory))
+            {
+                Directory.CreateDirectory(objectsDirectory);
+            }
+        }
+
+        private static string GetProjectFileTextContent()
+        {
+            var projectTemplate = new TestProjectTemplate();
+
+            return projectTemplate.TransformText();
         }
     }
 }

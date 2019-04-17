@@ -1,7 +1,20 @@
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
+using DotVVM.Framework.Compilation.ControlTree;
+using DotVVM.Framework.Compilation.ControlTree.Resolved;
+using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
+using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
+using DotVVM.Framework.Configuration;
+using DotVVM.Framework.Security;
 using DotVVM.Framework.Testing.SeleniumHelpers.Proxies;
+using DotVVM.Framework.Tools.SeleniumGenerator;
+using DotVVM.Framework.Utils;
 using DotVVM.Testing.SeleniumGenerator.Tests.Helpers;
+using DotVVM.Utils.ConfigurationHost.Initialization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests
@@ -56,15 +69,38 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         {
             using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
             {
-                workspace.ProcessMarkupFile("Views/SimplePage/Page.dothtml");
+                var processedFileContent = workspace.ProcessMarkupFile("Views/SimplePage/Page.dothtml");
 
                 // compile project
                 workspace.FixReferencedProjectPath(proxiesCsProjPath);
                 var compilation = await workspace.CompileAsync();
 
                 // verify the class
-                var pageObject = compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
+                compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
+
+                var config = ConfigurationHost.InitDotVVM(
+                    Assembly.LoadFile(Path.Combine(Path.GetFullPath(webAppDirectory), "bin\\debug\\netcoreapp2.0\\SampleApp1.dll")),
+                    webAppDirectory,
+                    services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+
+                var tree = ResolveControlTree(processedFileContent, config);
+
+                var visitor = new UiNamesTestingVisitor();
+                visitor.VisitView((ResolvedTreeRoot)tree);
+                var result = visitor.GetResult();
             }
+        }
+
+        private IAbstractTreeRoot ResolveControlTree(string fileContent, DotvvmConfiguration dotvvmConfiguration)
+        {
+            var tokenizer = new DothtmlTokenizer();
+            tokenizer.Tokenize(fileContent);
+
+            var parser = new DothtmlParser();
+            var rootNode = parser.Parse(tokenizer.Tokens);
+
+            var treeResolver = dotvvmConfiguration.ServiceProvider.GetService<IControlTreeResolver>();
+            return treeResolver.ResolveTree(rootNode, "Views/SimplePage/Page.dothtml");
         }
     }
 }

@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.Utils.ConfigurationH
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{92E5172E-6296-4FA3-8C99-754B332099D5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotVVM.Framework.Hosting.AspNetCore", "..\dotvvm\src\DotVVM.Framework.Hosting.AspNetCore\DotVVM.Framework.Hosting.AspNetCore.csproj", "{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{541201DF-4D92-4F74-A803-6387EDF4F9DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{F7875F7A-D262-48AD-8922-8A42EE13FF69} = {DA217F52-F86E-4DEA-92EB-9CFAE8216CD0}
 		{D79CA0A5-711E-4D80-9485-E5E2CD88B349} = {DA217F52-F86E-4DEA-92EB-9CFAE8216CD0}
 		{541201DF-4D92-4F74-A803-6387EDF4F9DD} = {92E5172E-6296-4FA3-8C99-754B332099D5}
+		{583C7CA2-A2F1-498F-848F-36A7A1B1D8F3} = {089DC67C-3FB5-4330-B201-E5E27C768BC5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F531FEB-3515-428B-9DBD-FB81D363B433}
