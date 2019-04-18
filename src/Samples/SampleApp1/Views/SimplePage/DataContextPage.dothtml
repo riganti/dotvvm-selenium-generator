@@ -1,0 +1,24 @@
+﻿@viewModel SampleApp1.ViewModels.SimplePage.DataContextPageViewModel, SampleApp1
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <p DataContext="{value: Address}">
+        Street:
+        <dot:TextBox Text="{value: Street}" Validator.Value="{value: Street}" />
+        City:
+        <dot:TextBox Text="{value: City}" Validator.Value="{value: City}" />
+        Postal code:
+        <dot:TextBox Text="{value: PostalCode}" Validator.Value="{value: PostalCode}" />
+    </p>
+
+</body>
+</html>
+
+

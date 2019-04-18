@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using DotVVM.Utils.ConfigurationHost.Initialization;
 using System.Reflection;
 using DotVVM.CommandLine.Core.Templates;
+using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -21,27 +23,52 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         public static void Main(string[] args)
         {
-            var arguments = new Arguments(args);
-
-            DotvvmProjectMetadata dotvvmProjectMetadata = null;
-            if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase))
+            try
             {
-                dotvvmProjectMetadata = JsonConvert.DeserializeObject<DotvvmProjectMetadata>(args[1]);
-                arguments.Consume(2);
+                var arguments = new Arguments(args);
+
+                DotvvmProjectMetadata dotvvmProjectMetadata = null;
+                if (string.Equals(arguments[0], "--json", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    dotvvmProjectMetadata = JsonConvert.DeserializeObject<DotvvmProjectMetadata>(args[1]);
+                    dotvvmProjectMetadata.WebAssemblyPath = dotvvmProjectMetadata.WebAssemblyPath.Replace(@"\\", @"\");
+                    dotvvmProjectMetadata.ProjectDirectory = dotvvmProjectMetadata.ProjectDirectory.Replace(@"\\", @"\");
+                    dotvvmProjectMetadata.MetadataFilePath = dotvvmProjectMetadata.MetadataFilePath.Replace(@"\\", @"\");
+                    arguments.Consume(2);
+                }
+                else
+                {
+                    Console.WriteLine(@"Provide correct metadata.");
+                    Environment.Exit(1);
+                }
+
+                ResolveTestProject(dotvvmProjectMetadata);
+                CreatePageObjectsDirectory(dotvvmProjectMetadata.GetUITestProjectFullPath());
+
+                var config = ConfigurationHost.InitDotVVM(Assembly.LoadFile(dotvvmProjectMetadata.WebAssemblyPath),
+                    dotvvmProjectMetadata.ProjectDirectory,
+                    services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+
+                // generate the test stubs
+                GeneratePageObjects(dotvvmProjectMetadata, config, arguments);
+
+                Console.WriteLine(@"#$ Exit 0 - DotVVM Selenium Generator Ended");
+                File.WriteAllText("C:\\Users\\filipkalous\\source\\new.txt", "end");
+                Environment.Exit(0);
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine(@"Provide correct metadata.");
-                Environment.Exit(1);
+                File.WriteAllText("C:\\Users\\filipkalous\\source\\new.txt", e.ToString());
+                throw;
             }
+        }
 
-            ResolveTestProject(dotvvmProjectMetadata);
-            CreatePageObjectsDirectory(dotvvmProjectMetadata.GetUITestProjectFullPath());
-
-
-            var config = ConfigurationHost.InitDotVVM(Assembly.LoadFile(dotvvmProjectMetadata.WebAssemblyPath),
-                dotvvmProjectMetadata.ProjectDirectory,
-                services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+        private static void GeneratePageObjects(DotvvmProjectMetadata dotvvmProjectMetadata,
+            DotvvmConfiguration dotvvmConfig, 
+            Arguments arguments)
+        {
+            var options = dotvvmConfig.ServiceProvider.GetService<SeleniumGeneratorOptions>();
+            var generator = new SeleniumPageObjectGenerator(options);
 
             IEnumerable<string> controlFiles = new List<string>();
             IEnumerable<string> viewFiles;
@@ -53,23 +80,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             else
             {
                 // generate all views and user controls files if no argument was specified
-                viewFiles = config.RouteTable.Where(b => b.VirtualPath != null).Select(r => r.VirtualPath);
-                controlFiles = config.Markup.Controls.Where(b => b.Src != null).Select(c => c.Src);
+                viewFiles = dotvvmConfig.RouteTable.Where(b => b.VirtualPath != null).Select(r => r.VirtualPath);
+                controlFiles = dotvvmConfig.Markup.Controls.Where(b => b.Src != null).Select(c => c.Src);
             }
-
-            // generate the test stubs
-            GeneratePageObjects(dotvvmProjectMetadata, controlFiles, viewFiles, config);
-
-            Console.WriteLine(@"#$ Exit 0 - DotVVM Selenium Generator Ended");
-            Environment.Exit(0);
-        }
-
-        private static void GeneratePageObjects(DotvvmProjectMetadata dotvvmProjectMetadata,
-            IEnumerable<string> controlFiles,
-            IEnumerable<string> viewFiles,
-            DotvvmConfiguration dotvvmConfig)
-        {
-            var generator = new SeleniumPageObjectGenerator();
 
             var allFiles = controlFiles.Concat(viewFiles).Distinct();
 

@@ -9,6 +9,8 @@ using DotVVM.Framework.Compilation.Parser;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
 using DotVVM.Framework.Configuration;
+using DotVVM.Framework.Hosting;
+using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,6 +21,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
     public class SeleniumPageObjectGenerator
     {
+        public SeleniumPageObjectGenerator(SeleniumGeneratorOptions options)
+        {
+            visitor = new SeleniumPageObjectVisitor();
+            visitor.DiscoverControlGenerators(options);
+        }
+
+        private readonly SeleniumPageObjectVisitor visitor;
+
         public void ProcessMarkupFile(DotvvmConfiguration dotvvmConfiguration, SeleniumGeneratorConfiguration seleniumConfiguration)
         {
             var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath, dotvvmConfiguration);
@@ -56,9 +66,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         private HashSet<string> GetUsedSelectors(IAbstractTreeRoot viewTree)
         {
             // traverse the tree
-            var visitor = new SeleniumSelectorFinderVisitor();
-            visitor.VisitView((ResolvedTreeRoot)viewTree);
-            return visitor.GetResult();
+            var selectorFinderVisitor = new SeleniumSelectorFinderVisitor();
+            selectorFinderVisitor.VisitView((ResolvedTreeRoot)viewTree);
+            return selectorFinderVisitor.GetResult();
         }
 
         private PageObjectDefinition CombineViewHelperDefinitions(PageObjectDefinition pageObject,
@@ -220,13 +230,13 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         }
 
         private PageObjectDefinition CreatePageObjectDefinition(
-            SeleniumGeneratorConfiguration seleniumConfiguration, IAbstractTreeRoot tree,
+            SeleniumGeneratorConfiguration seleniumConfiguration, 
+            IAbstractTreeRoot tree,
             HashSet<string> masterUsedUniqueSelectors = null)
         {
             var pageObjectDefinition = GetPageObjectDefinition(seleniumConfiguration, masterUsedUniqueSelectors);
 
             // traverse the tree
-            var visitor = new SeleniumPageObjectVisitor();
             visitor.PushScope(pageObjectDefinition);
             visitor.VisitView((ResolvedTreeRoot)tree);
             return visitor.PopScope();
@@ -305,7 +315,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         private IAbstractTreeRoot ResolveControlTree(string filePath, DotvvmConfiguration dotvvmConfiguration)
         {
-            var fileContent = File.ReadAllText(filePath, Encoding.UTF8);
+            var markupLoader = dotvvmConfiguration.ServiceProvider.GetService<IMarkupFileLoader>();
+            var markupFile = markupLoader.GetMarkup(dotvvmConfiguration, filePath);
+            var fileContent = markupFile.ContentsReaderFactory();
 
             var tokenizer = new DothtmlTokenizer();
             tokenizer.Tokenize(fileContent);

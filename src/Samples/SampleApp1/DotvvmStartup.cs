@@ -1,6 +1,8 @@
 ﻿using DotVVM.Framework.Configuration;
 using DotVVM.Framework.Routing;
+using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using SampleApp1.SeleniumGenerators;
 
 namespace SampleApp1
 {
@@ -32,10 +34,15 @@ namespace SampleApp1
         {
             // register custom resources and adjust paths to the built-in resources
         }
+
 		public void ConfigureServices(IDotvvmServiceCollection options)
         {
             options.AddDefaultTempStorages("temp");
             options.AddUploadedFileStorage("App_Data/Temp");
-		}
+            options.AddSeleniumGenerator(o =>
+            {
+                o.AddCustomGenerator(new ControlBSeleniumGenerator());
+            });
+        }
     }
 }

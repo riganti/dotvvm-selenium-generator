@@ -16,7 +16,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
                 .OfType<ITypeSymbol>()
                 .Single();
 
-            Assert.AreEqual(namespaceName, pageObjectSymbol.ContainingNamespace.ToDisplayString());
+            Assert.AreEqual(namespaceName, pageObjectSymbol.ContainingSymbol.ToDisplayString());
 
             return pageObjectSymbol;
         }

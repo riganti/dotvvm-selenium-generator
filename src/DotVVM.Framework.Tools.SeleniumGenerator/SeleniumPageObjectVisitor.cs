@@ -2,12 +2,12 @@
 using DotVVM.Framework.Controls;
 using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
-using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls;
 using DotVVM.Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls.GridViewControls;
+using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
+using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -15,39 +15,30 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
     {
         private Stack<PageObjectDefinition> HelperDefinitionsStack { get; } = new Stack<PageObjectDefinition>();
 
-        private static readonly Dictionary<Type, ISeleniumGenerator> generators = new Dictionary<Type, ISeleniumGenerator>()
-        {
-            { typeof(TextBox), new TextBoxControlGenerator() },
-            { typeof(CheckBox), new CheckBoxControlGenerator() },
-            { typeof(Button), new ButtonControlGenerator() },
-            { typeof(Literal), new LiteralControlGenerator() },
-            { typeof(Repeater), new RepeaterControlGenerator() },
-            { typeof(ValidationSummary), new ValidationSummaryControlGenerator() },
-            { typeof(RadioButton), new RadioButtonControlGenerator() },
-            { typeof(LinkButton), new LinkButtonControlGenerator() },
-            { typeof(RouteLink), new RouteLinkControlGenerator() },
-            { typeof(ComboBox), new ComboBoxControlGenerator() },
-            { typeof(ListBox), new ListBoxControlGenerator() },
-            { typeof(DataPager), new DataPagerControlGenerator() },
-            { typeof(GridView), new GridViewControlGenerator() },
-            { typeof(UpdateProgress), new UpdateProgressControlGenerator() },
-            { typeof(FileUpload), new FileUploadControlGenerator() },
-            { typeof(EmptyData), new EmptyDataControlGenerator() },
-            { typeof(GridViewTextColumn), new GridViewTextColumnControlGenerator() },
-            { typeof(GridViewCheckBoxColumn), new GridViewCheckBoxColumnControlGenerator() },
-            { typeof(GridViewTemplateColumn), new GridViewTemplateColumnControlGenerator() },
-            { typeof(HtmlGenericControl), new DotvvmControlGenerator() },
-        };
+        private Dictionary<Type, ISeleniumGenerator> generators;
 
-        private Dictionary<Type, ISeleniumGenerator> DiscoverControlGenerators(SeleniumGeneratorOptions options)
+        public SeleniumPageObjectVisitor()
         {
-            return options.Assemblies
-                 .SelectMany(a => a.GetLoadableTypes())
-                 .Where(t => typeof(ISeleniumGenerator).IsAssignableFrom(t) && !t.IsAbstract)
-                 .Select(t => (ISeleniumGenerator)Activator.CreateInstance(t))
-                 .ToDictionary(t => t.ControlType, t => t);
+            generators = new Dictionary<Type, ISeleniumGenerator>();
         }
 
+        public void DiscoverControlGenerators(SeleniumGeneratorOptions options)
+        {
+            generators = GetControlGenerators(options);
+        }
+
+        private static Dictionary<Type, ISeleniumGenerator> GetControlGenerators(SeleniumGeneratorOptions options)
+        {
+            var customGenerators = options.CustomGenerators.ToDictionary(t => t.ControlType, t => t);
+
+            var discoveredGenerators = options.Assemblies
+                .SelectMany(a => a.GetLoadableTypes())
+                .Where(t => typeof(ISeleniumGenerator).IsAssignableFrom(t) && !t.IsAbstract)
+                .Select(t => (ISeleniumGenerator)Activator.CreateInstance(t))
+                .ToDictionary(t => t.ControlType, t => t);
+
+            return customGenerators.AddRange(discoveredGenerators);
+        }
 
         public void PushScope(PageObjectDefinition definition)
         {

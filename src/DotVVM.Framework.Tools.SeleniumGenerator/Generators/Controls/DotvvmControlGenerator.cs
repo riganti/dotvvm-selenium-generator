@@ -4,7 +4,7 @@ using DotVVM.Framework.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
 {
-    public class DotvvmControlGenerator : SeleniumGenerator<HtmlGenericControl>
+    public class DotvvmControlGenerator : SeleniumGenerator<DotvvmMarkupControl>
     {
         public override DotvvmProperty[] NameProperties { get; } = { };
         public override bool CanUseControlContentForName => false;

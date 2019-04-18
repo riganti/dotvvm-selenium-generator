@@ -28,6 +28,7 @@
         <None Remove="Views\MasterPages\PageA.dothtml" />
         <None Remove="Views\MasterPages\PageB.dothtml" />
         <None Remove="Views\MasterPages\Site.dotmaster" />
+        <None Remove="Views\SimplePage\DataContextPage.dothtml" />
         <None Remove="Views\SimplePage\Page.dothtml" />
         <None Remove="Views\SimplePage\TestingPage.dothtml" />
         <None Remove="Views\SimplePage\TestPage.dothtml" />
@@ -44,5 +45,6 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\dotvvm\src\DotVVM.Framework.Hosting.AspNetCore\DotVVM.Framework.Hosting.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\DotVVM.Framework.Tools.SeleniumGenerator\DotVVM.Framework.Tools.SeleniumGenerator.csproj" />
     </ItemGroup>
 </Project>

@@ -1,16 +1,17 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using DotVVM.Framework.Compilation.ControlTree;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
 using DotVVM.Framework.Configuration;
+using DotVVM.Framework.Controls;
 using DotVVM.Framework.Security;
 using DotVVM.Framework.Testing.SeleniumHelpers.Proxies;
 using DotVVM.Framework.Tools.SeleniumGenerator;
-using DotVVM.Framework.Utils;
 using DotVVM.Testing.SeleniumGenerator.Tests.Helpers;
 using DotVVM.Utils.ConfigurationHost.Initialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,23 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         }
 
         [TestMethod]
+        public async Task TestPage_CheckSeparateRepeaterPageObject()
+        {
+            using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
+            {
+                workspace.ProcessMarkupFile("Views/SimplePage/TestPage.dothtml");
+
+                // compile project
+                workspace.FixReferencedProjectPath(proxiesCsProjPath);
+                var compilation = await workspace.CompileAsync();
+
+                // verify the class
+                compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "TestPagePageObject");
+                compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage.TestPagePageObject", "UsersRepeaterPageObject");
+            }
+        }
+
+        [TestMethod]
         public async Task SimplePage_CheckGeneratedUiNames()
         {
             using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
@@ -78,17 +96,85 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
                 // verify the class
                 compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
 
+                // get dotvvm config
                 var config = ConfigurationHost.InitDotVVM(
                     Assembly.LoadFile(Path.Combine(Path.GetFullPath(webAppDirectory), "bin\\debug\\netcoreapp2.0\\SampleApp1.dll")),
                     webAppDirectory,
                     services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
 
+                // get abstract tree
                 var tree = ResolveControlTree(processedFileContent, config);
 
+                // get and check results
                 var visitor = new UiNamesTestingVisitor();
-                visitor.VisitView((ResolvedTreeRoot)tree);
-                var result = visitor.GetResult();
+                GetControlsWithSelectors(tree, visitor);
+                var results = visitor.GetResult();
+
+                Assert.AreEqual(results.Count, 12);
+                AssertControlSelector((nameof(RadioButton), "Person"), results[0]);
+                AssertControlSelector((nameof(RadioButton), "Company"), results[1]);
+                AssertControlSelector((nameof(TextBox), "Name_FirstName"), results[2]);
+                AssertControlSelector((nameof(TextBox), "Name_LastName"), results[3]);
+                AssertControlSelector((nameof(Button), "Click"), results[4]);
+                AssertControlSelector((nameof(TextBox), "Address"), results[5]);
+                AssertControlSelector((nameof(CheckBox), "IsEuVatPayer"), results[6]);
+                AssertControlSelector((nameof(ComboBox), "CountryCode"), results[7]);
+                AssertControlSelector((nameof(Button), "CreateCompany"), results[8]);
+                AssertControlSelector((nameof(LinkButton), "ResetForm"), results[9]);
+                AssertControlSelector((nameof(Literal), "StatusMessage"), results[10]);
+                AssertControlSelector((nameof(ValidationSummary), "ValidationSummary"), results[11]);
             }
+        }
+
+        [TestMethod]
+        public async Task SimplePage_CheckDataContextDependingSelectors()
+        {
+            using (var workspace = new WebApplicationHost(TestContext, webAppDirectory))
+            {
+                var processedFileContent = workspace.ProcessMarkupFile("Views/SimplePage/Page.dothtml");
+
+                // compile project
+                workspace.FixReferencedProjectPath(proxiesCsProjPath);
+                var compilation = await workspace.CompileAsync();
+
+                // verify the class
+                compilation.AssertPageObject("SampleApp1.Tests.PageObjects.SimplePage", "PagePageObject");
+
+                // get dotvvm config
+                var config = ConfigurationHost.InitDotVVM(
+                    Assembly.LoadFile(Path.Combine(Path.GetFullPath(webAppDirectory), "bin\\debug\\netcoreapp2.0\\SampleApp1.dll")),
+                    webAppDirectory,
+                    services => services.TryAddSingleton<IViewModelProtector, FakeViewModelProtector>());
+
+                // get abstract tree
+                var tree = ResolveControlTree(processedFileContent, config);
+
+                // traverse tree and get all controls with selectors AND dataContexts
+                var visitor = new DataContextSelectorsTestingVisitor();
+                GetControlsWithSelectors(tree, visitor);
+                var results = visitor.GetResult();
+
+                Assert.AreEqual(results.Count, 2);
+
+                foreach (var (dataContext, _, selector) in results)
+                {
+                    var split = selector.Substring(0, selector.LastIndexOf('_'));
+                    Assert.AreEqual(split, dataContext);
+                }
+            }
+        }
+
+        private static void GetControlsWithSelectors(IAbstractTreeRoot tree, IResolvedControlTreeVisitor visitor)
+        {
+            visitor.VisitView((ResolvedTreeRoot) tree);
+        }
+
+        private void AssertControlSelector(
+            (string expectedControlName, string expectedSelectorName) expected, 
+            (string controlName, string selectorName) result)
+        {
+            Assert.AreEqual(expected.expectedControlName, result.controlName);
+            Assert.AreEqual(expected.expectedSelectorName,result.selectorName);
         }
 
         private IAbstractTreeRoot ResolveControlTree(string fileContent, DotvvmConfiguration dotvvmConfiguration)

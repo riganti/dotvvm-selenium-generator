@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
-    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator /*where TControl : DotvvmControl*/
+    public abstract class SeleniumGenerator<TControl> : ISeleniumGenerator where TControl : DotvvmBindableObject
     {
         /// <summary>
         /// Gets a list of properties that can be used to determine the control name.
@@ -29,6 +29,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
 
         public Type ControlType => typeof(TControl);
+
 
         /// <summary>
         /// Gets a list of declarations emitted by the control.
@@ -186,7 +187,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return uniqueName.First().ToString().ToUpper() + uniqueName.Substring(1);
         }
 
-        private string NormalizeUniqueName(string uniqueName)
+        internal string NormalizeUniqueName(string uniqueName)
         {
             var normalizedName = RemoveDiacritics(uniqueName);
             var firstLetterOfName = normalizedName[0];
@@ -239,7 +240,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return null;
         }
 
-        private string RemoveNonIdentifierCharacters(string value)
+        internal string RemoveNonIdentifierCharacters(string value)
         {
             var sb = new StringBuilder();
             var isLastLetterWhitespace = false;
