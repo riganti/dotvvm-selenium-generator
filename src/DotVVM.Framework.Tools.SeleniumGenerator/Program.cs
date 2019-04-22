@@ -53,12 +53,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 GeneratePageObjects(dotvvmProjectMetadata, config, arguments);
 
                 Console.WriteLine(@"#$ Exit 0 - DotVVM Selenium Generator Ended");
-                File.WriteAllText("C:\\Users\\filipkalous\\source\\new.txt", "end");
                 Environment.Exit(0);
             }
             catch (Exception e)
             {
-                File.WriteAllText("C:\\Users\\filipkalous\\source\\new.txt", e.ToString());
+                Console.WriteLine(@"#$ Exit 1 - DotVVM Selenium Generator Failed" + e);
                 throw;
             }
         }
@@ -68,7 +67,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             Arguments arguments)
         {
             var options = dotvvmConfig.ServiceProvider.GetService<SeleniumGeneratorOptions>();
-            var generator = new SeleniumPageObjectGenerator(options);
+            var generator = new SeleniumPageObjectGenerator(options, dotvvmConfig);
 
             IEnumerable<string> controlFiles = new List<string>();
             IEnumerable<string> viewFiles;
@@ -100,13 +99,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
                     var config = GetSeleniumGeneratorConfiguration(fullTypeName, targetFileName, file);
 
-                    GeneratePageObject(generator, dotvvmConfig, config);
+                    GeneratePageObject(generator, config);
                 }
             }
         }
 
-        private static void GeneratePageObject(SeleniumPageObjectGenerator generator, DotvvmConfiguration dotvvmConfig, SeleniumGeneratorConfiguration config)
-           => generator.ProcessMarkupFile(dotvvmConfig, config);
+        private static void GeneratePageObject(SeleniumPageObjectGenerator generator,
+            SeleniumGeneratorConfiguration config)
+           => generator.ProcessMarkupFile(config);
 
         private static IEnumerable<string> GetViewsFiles(IEnumerable<string> filePaths)
         {

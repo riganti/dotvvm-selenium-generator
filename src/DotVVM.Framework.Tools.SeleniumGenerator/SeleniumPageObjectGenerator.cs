@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,23 +22,28 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
     public class SeleniumPageObjectGenerator
     {
-        public SeleniumPageObjectGenerator(SeleniumGeneratorOptions options)
+        private readonly DotvvmConfiguration dotvvmConfig;
+        private readonly ConcurrentDictionary<string, IAbstractTreeRoot> resolvedTreeRoots;
+
+        public SeleniumPageObjectGenerator(SeleniumGeneratorOptions options, DotvvmConfiguration dotvvmConfig)
         {
-            visitor = new SeleniumPageObjectVisitor();
+            this.dotvvmConfig = dotvvmConfig;
+            this.resolvedTreeRoots = new ConcurrentDictionary<string, IAbstractTreeRoot>();
+            visitor = new SeleniumPageObjectVisitor(this);
             visitor.DiscoverControlGenerators(options);
         }
 
         private readonly SeleniumPageObjectVisitor visitor;
 
-        public void ProcessMarkupFile(DotvvmConfiguration dotvvmConfiguration, SeleniumGeneratorConfiguration seleniumConfiguration)
+        public void ProcessMarkupFile(SeleniumGeneratorConfiguration seleniumConfiguration)
         {
-            var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath, dotvvmConfiguration);
+            var viewTree = ResolveControlTree(seleniumConfiguration.ViewFullPath);
 
             // get all ui tests selectors used in current view
             var usedSelectors = GetUsedSelectors(viewTree);
 
             // resolve master pages of current page
-            var masterPageObjectDefinitions = ResolveMasterPages(dotvvmConfiguration, seleniumConfiguration, viewTree);
+            var masterPageObjectDefinitions = ResolveMasterPages(dotvvmConfig, seleniumConfiguration, viewTree);
 
             // union used unique names across all master pages and current view
             var allUsedNames = UnionUsedUniqueNames(masterPageObjectDefinitions, usedSelectors);
@@ -53,6 +59,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
             // update view markup file
             UpdateMarkupFile(pageObject, seleniumConfiguration.ViewFullPath);
+        }
+
+        public IAbstractTreeRoot ResolveControlTree(string filePath)
+        {
+            return resolvedTreeRoots.GetOrAdd(filePath, ResolveControlTreeUncached);
         }
 
         private HashSet<string> UnionUsedUniqueNames(
@@ -112,7 +123,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 var masterPageFile = viewTree.Directives[ParserConstants.MasterPageDirective].FirstOrDefault();
                 if (masterPageFile != null)
                 {
-                    var masterTree = ResolveControlTree(masterPageFile.Value, dotvvmConfiguration);
+                    var masterTree = ResolveControlTree(masterPageFile.Value);
                     var usedSelectors = GetUsedSelectors(masterTree);
 
                     var masterPageObjectDefinition = GetMasterPageObjectDefinition(seleniumConfiguration, masterTree, masterPageFile, usedSelectors);
@@ -313,10 +324,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }));
         }
 
-        private IAbstractTreeRoot ResolveControlTree(string filePath, DotvvmConfiguration dotvvmConfiguration)
+        private IAbstractTreeRoot ResolveControlTreeUncached(string filePath)
         {
-            var markupLoader = dotvvmConfiguration.ServiceProvider.GetService<IMarkupFileLoader>();
-            var markupFile = markupLoader.GetMarkup(dotvvmConfiguration, filePath);
+            var markupLoader = dotvvmConfig.ServiceProvider.GetService<IMarkupFileLoader>();
+            var markupFile = markupLoader.GetMarkup(dotvvmConfig, filePath);
             var fileContent = markupFile.ContentsReaderFactory();
 
             var tokenizer = new DothtmlTokenizer();
@@ -325,7 +336,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             var parser = new DothtmlParser();
             var rootNode = parser.Parse(tokenizer.Tokens);
 
-            var treeResolver = dotvvmConfiguration.ServiceProvider.GetService<IControlTreeResolver>();
+            var treeResolver = dotvvmConfig.ServiceProvider.GetService<IControlTreeResolver>();
             return treeResolver.ResolveTree(rootNode, filePath);
         }
     }

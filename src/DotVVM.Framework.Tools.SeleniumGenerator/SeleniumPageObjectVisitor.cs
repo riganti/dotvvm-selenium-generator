@@ -6,19 +6,23 @@ using DotVVM.Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
-using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
     public class SeleniumPageObjectVisitor : ResolvedControlTreeVisitor
     {
+        private readonly SeleniumPageObjectGenerator seleniumGenerator;
+
         private Stack<PageObjectDefinition> HelperDefinitionsStack { get; } = new Stack<PageObjectDefinition>();
 
         private Dictionary<Type, ISeleniumGenerator> generators;
 
-        public SeleniumPageObjectVisitor()
+        public SeleniumPageObjectVisitor(SeleniumPageObjectGenerator seleniumGenerator)
         {
+            this.seleniumGenerator = seleniumGenerator;
             generators = new Dictionary<Type, ISeleniumGenerator>();
         }
 
@@ -50,7 +54,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             return HelperDefinitionsStack.Pop();
         }
 
-        // TODO: if dotcontrol - use dotvvmControlGenerator
         public override void VisitControl(ResolvedControl control)
         {
             var helperDefinition = HelperDefinitionsStack.Peek();
@@ -66,7 +69,29 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 }
             }
 
-            if (generators.TryGetValue(control.Metadata.Type, out var generator))
+            var controlType = control.Metadata.Type;
+            if (controlType == typeof(DotvvmMarkupControl))
+            {
+                var controlTreeRoot = seleniumGenerator.ResolveControlTree(control.Metadata.VirtualPath);
+
+                if (controlTreeRoot != null 
+                    && controlTreeRoot.Directives.TryGetValue("baseType", out var baseTypeDirectives))
+                {
+                    var names = baseTypeDirectives.First().Value.Split(',').Select(b => b.Trim()).ToList();
+
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(b => b.GetName().Name == names.Last());
+                    if (assembly != null)
+                    {
+                        controlType = assembly.GetType(names.First());
+                    }
+                    else
+                    {
+                        controlType = Type.GetType(names.First(), true);
+                    }
+                }
+            }
+
+            if (generators.TryGetValue(controlType, out var generator))
             {
                 // generate the content
                 var context = new SeleniumGeneratorContext()

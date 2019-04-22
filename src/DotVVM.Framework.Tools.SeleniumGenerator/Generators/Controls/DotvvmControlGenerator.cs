@@ -12,6 +12,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         public override bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             // check if node is user control
+            // todo: odstranit
             return context.Control.DothtmlNode is DothtmlElementNode htmlNode 
                    && htmlNode.TagPrefix != null 
                    && htmlNode.TagPrefix != "dot";
