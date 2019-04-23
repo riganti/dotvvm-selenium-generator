@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
+using DotVVM.Framework.Compilation.ControlTree;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
 {
@@ -77,17 +78,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 if (controlTreeRoot != null 
                     && controlTreeRoot.Directives.TryGetValue("baseType", out var baseTypeDirectives))
                 {
-                    var names = baseTypeDirectives.First().Value.Split(',').Select(b => b.Trim()).ToList();
+                    var (typeName, assemblyName) = GetSplitTypeName(baseTypeDirectives);
 
-                    var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(b => b.GetName().Name == names.Last());
-                    if (assembly != null)
-                    {
-                        controlType = assembly.GetType(names.First());
-                    }
-                    else
-                    {
-                        controlType = Type.GetType(names.First(), true);
-                    }
+                    controlType = GetControlType(typeName, assemblyName);
                 }
             }
 
@@ -115,6 +108,21 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             {
                 helperDefinition.DataContextPrefixes.RemoveAt(helperDefinition.DataContextPrefixes.Count - 1);
             }
+        }
+
+        private static Type GetControlType(string typeName, string assemblyName)
+        {
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(b => b.GetName().Name == assemblyName);
+
+            return assembly != null 
+                ? assembly.GetType(typeName) 
+                : Type.GetType(typeName, true);
+        }
+
+        private static (string typeName, string assemblyName) GetSplitTypeName(List<IAbstractDirective> baseTypeDirectives)
+        {
+            var split = baseTypeDirectives.First().Value.Split(',').Select(b => b.Trim());
+            return (split.First(), split.Last());
         }
     }
 }

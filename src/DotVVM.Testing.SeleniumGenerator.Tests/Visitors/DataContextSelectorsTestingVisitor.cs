@@ -2,8 +2,9 @@
 using System.Linq;
 using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Controls;
+using DotVVM.Testing.SeleniumGenerator.Tests.Helpers;
 
-namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
+namespace DotVVM.Testing.SeleniumGenerator.Tests.Visitors
 {
     public class DataContextSelectorsTestingVisitor : SeleniumGeneratorTestsVisitor
     {
@@ -37,9 +38,26 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             }
         }
 
-        public IList<(string dataContext, string controlName, string selector)> GetResult()
+        public IList<DataContextControlSelectorResult> GetResult()
         {
-            return controlSelectors.Where(c => !string.IsNullOrEmpty(c.dataContext)).ToList();
+            return controlSelectors
+                .Where(c => !string.IsNullOrEmpty(c.dataContext))
+                .Select(c => new DataContextControlSelectorResult
+                {
+                    DataContext = c.dataContext,
+                    ControlName = c.controlName,
+                    Selector = c.selector
+                })
+                .ToList();
         }
+    }
+
+    public class DataContextControlSelectorResult
+    {
+        public string DataContext { get; set; }
+
+        public string ControlName { get; set; }
+
+        public string Selector { get; set; }
     }
 }

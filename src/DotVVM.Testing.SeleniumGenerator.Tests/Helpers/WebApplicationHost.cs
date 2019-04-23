@@ -56,7 +56,6 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             Process.Start("xcopy", $"/E \"{webApplicationTemplatePath}\" \"{webAppDirectory}\"")?.WaitForExit();
 
             // set test project path in .dotvvm.json
-            // TODO: fix 
             var metadataService = new DotvvmProjectMetadataService();
             metadata = metadataService.LoadFromFile(dotvvmJsonPath);
             metadata.UITestProjectPath = $"../{testProjectName}";

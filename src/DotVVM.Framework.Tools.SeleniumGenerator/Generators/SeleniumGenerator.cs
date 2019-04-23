@@ -89,24 +89,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return selector;
         }
 
-        private string RemoveUpperLetters(string selector)
-        {
-            var sb = new StringBuilder();
-
-            for (var i = 0; i < selector.Length; i++)
-            {
-                char c = selector[i];
-                if (i != 0 && char.IsUpper(c))
-                {
-                    sb.Append('-');
-                }
-
-                sb.Append(char.ToLower(c));
-            }
-
-            return sb.ToString();
-        }
-
         public virtual bool CanAddDeclarations(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
             return true;
@@ -172,7 +154,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             return uniqueName;
         }
 
-        protected string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
+        internal string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
         {
             if (dataContextPrefixes.Any())
             {

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DotVVM.Framework.Compilation.ControlTree;
@@ -13,6 +11,7 @@ using DotVVM.Framework.Security;
 using DotVVM.Framework.Testing.SeleniumHelpers.Proxies;
 using DotVVM.Framework.Tools.SeleniumGenerator;
 using DotVVM.Testing.SeleniumGenerator.Tests.Helpers;
+using DotVVM.Testing.SeleniumGenerator.Tests.Visitors;
 using DotVVM.Utils.ConfigurationHost.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,6 +35,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
             proxiesCsProjPath = Path.Combine(solutionDirectory, "DotVVM.Framework.Testing.SeleniumHelpers\\DotVVM.Framework.Testing.SeleniumHelpers.csproj");
         }
 
+        // todo: otestovat DetermineName metodu
 
         [TestMethod]
         public async Task SimplePage_CheckGeneratedProperties()
@@ -154,12 +154,14 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
                 GetControlsWithSelectors(tree, visitor);
                 var results = visitor.GetResult();
 
+                // check number of properties with dataContext prefix
                 Assert.AreEqual(results.Count, 2);
 
-                foreach (var (dataContext, _, selector) in results)
+                // check correctness of dataContext prefixes
+                foreach (var result in results)
                 {
-                    var split = selector.Substring(0, selector.LastIndexOf('_'));
-                    Assert.AreEqual(split, dataContext);
+                    var split = result.Selector.Substring(0, result.Selector.LastIndexOf('_'));
+                    Assert.AreEqual(split, result.DataContext);
                 }
             }
         }
