@@ -1,17 +1,13 @@
 using System;
 using DotVVM.Framework.Binding;
-using DotVVM.Framework.Compilation.ControlTree;
-using DotVVM.Framework.Compilation.ControlTree.Resolved;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Tokenizer;
 using DotVVM.Framework.Controls;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using DotVVM.Framework.Compilation.Parser.Dothtml.Parser;
-using Microsoft.CodeAnalysis;
+using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Helpers;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 {
@@ -38,7 +34,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
         {
             string propertyName;
 
-            var htmlName = TryGetNameFromProperty(context.Control, UITests.NameProperty);
+            var htmlName = SelectorStringHelper.TryGetNameFromProperty(context.Control, UITests.NameProperty);
             if (htmlName == null)
             {
                 // determine the name
@@ -50,7 +46,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             }
 
             // normalize name
-            var normalizedName = RemoveNonIdentifierCharacters(propertyName);
+            var normalizedName = SelectorStringHelper.RemoveNonIdentifierCharacters(propertyName);
             // make the name unique
             var uniqueName = MakePropertyNameUnique(context.UsedNames, normalizedName);
 
@@ -73,7 +69,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             AddDeclarationsCore(pageObject, context);
         }
 
-        private string MakePropertyNameUnique(ICollection<string> usedNames, string selector)
+        internal string MakePropertyNameUnique(ICollection<string> usedNames, string selector)
         {
             if (usedNames.Contains(selector))
             {
@@ -117,10 +113,10 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             string uniqueName = null;
             foreach (var nameProperty in NameProperties)
             {
-                uniqueName = TryGetNameFromProperty(context.Control, nameProperty);
+                uniqueName = SelectorStringHelper.TryGetNameFromProperty(context.Control, nameProperty);
                 if (uniqueName != null)
                 {
-                    uniqueName = NormalizeUniqueName(uniqueName);
+                    uniqueName = SelectorStringHelper.NormalizeUniqueName(uniqueName);
                     break;
                 }
             }
@@ -128,7 +124,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             // if not found, try to use the content of the control to determine the name
             if (uniqueName == null && CanUseControlContentForName)
             {
-                uniqueName = GetTextFromContent(context.Control.Content);
+                uniqueName = SelectorStringHelper.GetTextFromContent(context.Control.Content);
             }
 
             // check if control is userControl and assign control's name as unique name
@@ -148,145 +144,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
 
             if (shouldAddDataContextPrefixes)
             {
-                uniqueName = AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
+                uniqueName = SelectorStringHelper.AddDataContextPrefixesToName(pageObject.DataContextPrefixes, uniqueName);
             }
 
             return uniqueName;
         }
 
-        internal string AddDataContextPrefixesToName(IList<string> dataContextPrefixes, string uniqueName)
-        {
-            if (dataContextPrefixes.Any())
-            {
-                return $"{string.Join("_", dataContextPrefixes)}_{SetFirstLetterUp(uniqueName)}";
-            }
-
-            return SetFirstLetterUp(uniqueName);
-        }
-
-        private string SetFirstLetterUp(string uniqueName)
-        {
-            return uniqueName.First().ToString().ToUpper() + uniqueName.Substring(1);
-        }
-
-        internal string NormalizeUniqueName(string uniqueName)
-        {
-            var normalizedName = RemoveDiacritics(uniqueName);
-            var firstLetterOfName = normalizedName[0];
-
-            // if first letter is numeric add underscore to the name
-            if (char.IsDigit(firstLetterOfName))
-            {
-                normalizedName = normalizedName.Insert(0, "_");
-            }
-            else
-            {
-                char[] a = normalizedName.ToCharArray();
-                a[0] = char.ToUpper(a[0]);
-                normalizedName = new string(a);
-            }
-
-            return normalizedName;
-        }
-
-        private string RemoveDiacritics(string text)
-        {
-            var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
-
-        protected string TryGetNameFromProperty(ResolvedControl control, DotvvmProperty property)
-        {
-            if (control.TryGetProperty(property, out IAbstractPropertySetter setter))
-            {
-                switch (setter)
-                {
-                    case ResolvedPropertyValue propertySetter:
-                        return propertySetter.Value?.ToString();
-
-                    case ResolvedPropertyBinding propertyBinding:
-                        return propertyBinding.Binding.Value;
-                }
-            }
-            return null;
-        }
-
-        internal string RemoveNonIdentifierCharacters(string value)
-        {
-            var sb = new StringBuilder();
-            var isLastLetterWhitespace = false;
-
-            for (var i = 0; i < value.Length; i++)
-            {
-                char c = value[i];
-                if (char.IsLetterOrDigit(c) || c == '_')
-                {
-                    if (i == 0)
-                    {
-                        c = char.ToUpper(c);
-                    }
-                    else if (isLastLetterWhitespace)
-                    {
-                        c = char.ToUpper(c);
-                        isLastLetterWhitespace = false;
-                    }
-
-                    sb.Append(c);
-                }
-                else if (char.IsWhiteSpace(c))
-                {
-                    isLastLetterWhitespace = true;
-                }
-            }
-
-            if (sb.Length == 0)
-            {
-                return null;
-            }
-
-            if (char.IsDigit(sb[0]))
-            {
-                sb.Insert(0, '_');
-            }
-
-            return sb.ToString();
-        }
-
-        private string GetTextFromContent(IEnumerable<ResolvedControl> controls)
-        {
-            var sb = new StringBuilder();
-
-            foreach (var control in controls)
-            {
-                if (control.Metadata.Type == typeof(Literal))
-                {
-                    sb.Append(TryGetNameFromProperty(control, Literal.TextProperty));
-                }
-                else if (control.Metadata.Type == typeof(HtmlGenericControl))
-                {
-                    sb.Append(TryGetNameFromProperty(control, HtmlGenericControl.InnerTextProperty));
-                }
-            }
-
-            // ensure the text is not too long
-            var text = RemoveNonIdentifierCharacters(sb.ToString());
-            if (text?.Length > 20)
-            {
-                text = text.Substring(0, 20);
-            }
-            return text;
-        }
 
         protected void AddPageObjectProperties(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
         {
@@ -303,23 +166,16 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
             pageObject.ConstructorStatements.Add(GenerateInitializerForProxy(context, type, itemHelperName));
         }
 
-        private static TypeSyntax ParseTypeName(string typeName, params string[] genericTypeNames)
+        protected void AddControlPageObjectProperty(PageObjectDefinition pageObject, SeleniumGeneratorContext context, string type)
         {
-            if (genericTypeNames.Length == 0)
-            {
-                return SyntaxFactory.ParseTypeName(typeName);
-            }
-
-            return SyntaxFactory.GenericName(typeName)
-                .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(SyntaxFactory.SeparatedList(
-                    genericTypeNames.Select(n => SyntaxFactory.ParseTypeName(n)))
-                ));
+            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
+            pageObject.ConstructorStatements.Add(GenerateInitializerForControl(context.UniqueName, context.Selector, type));
         }
 
         protected MemberDeclarationSyntax GeneratePropertyForProxy(string uniqueName, string typeName, params string[] genericTypeNames)
         {
             return SyntaxFactory.PropertyDeclaration(
-                    ParseTypeName(typeName, genericTypeNames),
+                    RoslynHelper.ParseTypeName(typeName, genericTypeNames),
                     uniqueName
                 )
                 .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)))
@@ -335,19 +191,18 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
                     SyntaxFactory.IdentifierName(context.UniqueName),
-                    SyntaxFactory.ObjectCreationExpression(ParseTypeName(typeName, genericTypeNames))
+                    SyntaxFactory.ObjectCreationExpression(RoslynHelper.ParseTypeName(typeName, genericTypeNames))
                         .WithArgumentList(
                             SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
                             {
                                 SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                                SyntaxFactory.Argument(GetPathSelectorObjectInitialization(context.UniqueName, context.Selector))
+                                SyntaxFactory.Argument(RoslynHelper.GetPathSelectorObjectInitialization(context.Selector))
                             }))
                         )
                 )
             );
         }
 
-        // TODO: decide if proxy should be generated or using property like this
         protected StatementSyntax GenerateInitializerForControl(string propertyName, string selector, string typeName)
         {
             return SyntaxFactory.ExpressionStatement(
@@ -359,7 +214,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         {
                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("webDriver")),
                             SyntaxFactory.Argument(SyntaxFactory.ThisExpression()),
-                            SyntaxFactory.Argument(GetPathSelectorObjectInitialization(propertyName, selector))
+                            SyntaxFactory.Argument(RoslynHelper.GetPathSelectorObjectInitialization(selector))
                         })))
                 )
             );
@@ -380,31 +235,6 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators
                         })))
                 )
             );
-        }
-
-        private ObjectCreationExpressionSyntax GetPathSelectorObjectInitialization(string contextUniqueName,
-            string propertyName)
-        {
-            return SyntaxFactory.ObjectCreationExpression(
-                    SyntaxFactory.IdentifierName("PathSelector"))
-                .WithInitializer(
-                    SyntaxFactory.InitializerExpression(
-                        SyntaxKind.ObjectInitializerExpression,
-                        SyntaxFactory.SeparatedList<ExpressionSyntax>(new SyntaxNodeOrToken[]
-                        {
-                            SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression,
-                                SyntaxFactory.IdentifierName("UiName"),
-                                SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression,
-                                    SyntaxFactory.Literal(propertyName))),
-                            SyntaxFactory.Token(SyntaxKind.CommaToken),
-                            SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression,
-                                SyntaxFactory.IdentifierName("Parent"),
-                                SyntaxFactory.IdentifierName("parentSelector"))
-                        })
-                    )
-                );
         }
 
         protected abstract void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context);

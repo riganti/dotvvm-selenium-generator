@@ -10,8 +10,10 @@ namespace SampleApp1.SeleniumGenerators
         public override bool CanUseControlContentForName => false;
         protected override void AddDeclarationsCore(PageObjectDefinition pageObject, SeleniumGeneratorContext context)
         {
-            const string type = "ControlBPageObject";
-            AddPageObjectProperties(pageObject, context, type);
+            // this is generator for user control so it's using PageObject not Proxy
+            // you need to create this class in your UI test project in folder PageObjects
+            const string type = "PageObjects.MyControlBPageObject";
+            AddControlPageObjectProperty(pageObject, context, type);
         }
     }
 }

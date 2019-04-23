@@ -3,6 +3,7 @@ using DotVVM.Framework.Controls;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using DotVVM.Framework.Binding;
 using System.Collections.Generic;
+using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Helpers;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests
 {
@@ -13,11 +14,10 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         public void SeleniumGenerator_TestRemovingNonIdentifierCharacters()
         {
             // initialize
-            var myGenerator = new MySeleniumGeneratorTestClass();
             var testString = "__Ahoj1234@\'PTest Test";
 
             // do
-            var resultString = myGenerator.RemoveNonIdentifierCharacters(testString);
+            var resultString = SelectorStringHelper.RemoveNonIdentifierCharacters(testString);
 
             // assert
             var expectedString = "__Ahoj1234PTestTest";
@@ -28,12 +28,11 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         public void SeleniumGenerator_TestAddDataContextPrefixesToName()
         {
             // initialize
-            var myGenerator = new MySeleniumGeneratorTestClass();
             var dataContextPrefixes = new List<string> { "MyPage", "FirstTab", "Address" };
             var uniqueName = "City";
 
             // do
-            var uniqueNameWithDataContextPrefixes = myGenerator.AddDataContextPrefixesToName(dataContextPrefixes, uniqueName);
+            var uniqueNameWithDataContextPrefixes = SelectorStringHelper.AddDataContextPrefixesToName(dataContextPrefixes, uniqueName);
 
             // assert
             var expectedResult = "MyPage_FirstTab_Address_City";
@@ -44,11 +43,10 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         public void SeleniumGenerator_TestNormalizeUniqueName()
         {
             // initialize
-            var myGenerator = new MySeleniumGeneratorTestClass();
             var testString = "My superb String";
 
             // do
-            var resultString = myGenerator.RemoveNonIdentifierCharacters(testString);
+            var resultString = SelectorStringHelper.RemoveNonIdentifierCharacters(testString);
 
             // assert
             var expectedString = "MySuperbString";
@@ -56,9 +54,49 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
         }
 
         [TestMethod]
-        public void SeleniumGenerator_()
+        public void SeleniumGenerator_CheckMakePropertyNameUnique()
         {
+            // initialize
+            var myGenerator = new MySeleniumGeneratorTestClass();
+            var usedNames = new List<string> { "First", "Second", "Third" };
+            var testString = "Second";
+            var expectedString = "Second1";
 
+            // do
+            var resultString = myGenerator.MakePropertyNameUnique(usedNames, testString);
+
+            // assert
+            Assert.AreEqual(expectedString, resultString);
+        }
+
+        [TestMethod]
+        public void SeleniumGenerator_MakePropertyNameUnique()
+        {
+            // initialize
+            var myGenerator = new MySeleniumGeneratorTestClass();
+            var usedNames = new List<string> { "First", "Second", "Third" };
+            var testString = "Fourth";
+            var expectedString = "Fourth";
+
+            // do
+            var resultString = myGenerator.MakePropertyNameUnique(usedNames, testString);
+
+            // assert
+            Assert.AreEqual(expectedString, resultString);
+        }
+
+        [TestMethod]
+        public void SelectorStringHelper_SetFirstLetterUp()
+        {
+            // initialize
+            var testString = "testString";
+            var expectedString = "TestString";
+
+            // do
+            var resultString = SelectorStringHelper.SetFirstLetterUp(testString);
+
+            // assert
+            Assert.AreEqual(expectedString, resultString);
         }
     }
 

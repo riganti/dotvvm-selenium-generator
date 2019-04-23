@@ -22,8 +22,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator.Generators.Controls
         {
             var type = $"{context.UniqueName}PageObject";
 
-            pageObject.Members.Add(GeneratePropertyForProxy(context.UniqueName, type));
-            pageObject.ConstructorStatements.Add(GenerateInitializerForControl(context.UniqueName, context.Selector, type));
+            AddControlPageObjectProperty(pageObject, context, type);
         }
     }
 }

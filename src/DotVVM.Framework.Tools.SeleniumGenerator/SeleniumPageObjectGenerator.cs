@@ -103,7 +103,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             IAbstractTreeRoot viewTree)
         {
             var pageObjectDefinitions = new List<MasterPageObjectDefinition>();
-            CreateMasterPageObjectDefinitions(dotvvmConfiguration, seleniumConfiguration, viewTree, pageObjectDefinitions);
+            CreateMasterPageObjectDefinitions(seleniumConfiguration, viewTree, pageObjectDefinitions);
 
             foreach (var pageObjectDefinition in pageObjectDefinitions)
             {
@@ -113,8 +113,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             return pageObjectDefinitions;
         }
 
-        private void CreateMasterPageObjectDefinitions(DotvvmConfiguration dotvvmConfiguration,
-            SeleniumGeneratorConfiguration seleniumConfiguration,
+        private void CreateMasterPageObjectDefinitions(SeleniumGeneratorConfiguration seleniumConfiguration,
             IAbstractTreeRoot viewTree,
             ICollection<MasterPageObjectDefinition> pageObjectDefinitions)
         {
@@ -131,7 +130,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     pageObjectDefinitions.Add(masterPageObjectDefinition);
 
                     // recursion
-                    CreateMasterPageObjectDefinitions(dotvvmConfiguration, seleniumConfiguration, masterTree, pageObjectDefinitions);
+                    CreateMasterPageObjectDefinitions(seleniumConfiguration, masterTree, pageObjectDefinitions);
                 }
             }
         }

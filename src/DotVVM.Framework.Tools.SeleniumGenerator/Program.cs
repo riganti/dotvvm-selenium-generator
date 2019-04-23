@@ -147,7 +147,7 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             var testProjectDirectory = dotvvmProjectMetadata.GetUITestProjectFullPath();
             if (!Directory.Exists(testProjectDirectory))
             {
-                GenerateTestProject(testProjectDirectory);
+                GenerateTestProject(testProjectDirectory, dotvvmProjectMetadata.ProjectDirectory);
             }
 
             // make sure we know the test project namespace
@@ -160,11 +160,13 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             metadataService.Save(dotvvmProjectMetadata);
         }
 
-        private static void GenerateTestProject(string projectDirectory)
+        private static void GenerateTestProject(string testProjectDirectory, string projectDirectory)
         {
-            var projectFileName = Path.GetFileName(projectDirectory);
-            var testProjectPath = Path.Combine(projectDirectory, projectFileName + ".csproj");
-            var fileContent = GetProjectFileTextContent();
+            var testProjectFileName = Path.GetFileName(testProjectDirectory);
+            var webProjectFileName = Path.GetFileName(projectDirectory);
+            var testProjectPath = Path.Combine(testProjectDirectory, testProjectFileName + ".csproj");
+            var webProjectPath = Path.Combine(projectDirectory, webProjectFileName + ".csproj");
+            var fileContent = GetProjectFileTextContent(webProjectPath);
 
             FileSystemHelpers.WriteFile(testProjectPath, fileContent);
         }
@@ -178,9 +180,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }
         }
 
-        private static string GetProjectFileTextContent()
+        private static string GetProjectFileTextContent(string projectDirectory)
         {
-            var projectTemplate = new TestProjectTemplate();
+            var projectTemplate = new TestProjectTemplate
+            {
+                WebProjectPath = projectDirectory
+            };
 
             return projectTemplate.TransformText();
         }
