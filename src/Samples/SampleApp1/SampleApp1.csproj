@@ -24,6 +24,7 @@
         <None Remove="dotvvm_serialized_config.json.tmp" />
         <None Remove="Views\Controls\PageWithControls.dothtml" />
         <None Remove="Views\Default.dothtml" />
+        <None Remove="Views\Forms\SignIn.dothtml" />
         <None Remove="Views\MasterPages\Layout.dotmaster" />
         <None Remove="Views\MasterPages\PageA.dothtml" />
         <None Remove="Views\MasterPages\PageB.dothtml" />
@@ -41,7 +42,7 @@
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     </ItemGroup>
     <ItemGroup>
-        <DotNetCliToolReference Include="DotVVM.Compiler.Light" Version="2.0.0" />
+        <DotNetCliToolReference Include="DotVVM.CommandLine" Version="2.0.0" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\dotvvm\src\DotVVM.Framework.Hosting.AspNetCore\DotVVM.Framework.Hosting.AspNetCore.csproj" />
