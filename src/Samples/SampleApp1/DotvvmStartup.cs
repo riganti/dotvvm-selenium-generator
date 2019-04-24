@@ -41,7 +41,7 @@ namespace SampleApp1
             options.AddUploadedFileStorage("App_Data/Temp");
             options.AddSeleniumGenerator(o =>
             {
-                o.AddCustomGenerator(new ControlBSeleniumGenerator());
+                //o.AddCustomGenerator(new ControlBSeleniumGenerator());
             });
         }
     }

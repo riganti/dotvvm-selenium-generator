@@ -3,6 +3,8 @@ using DotVVM.Framework.Controls;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using DotVVM.Framework.Binding;
 using System.Collections.Generic;
+using System.Linq;
+using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Helpers;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests
@@ -97,6 +99,72 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
 
             // assert
             Assert.AreEqual(expectedString, resultString);
+        }
+
+        [TestMethod]
+        public void SeleniumGeneratorOptions_AddCustomGenerator()
+        {
+            // initialize
+            var options = new SeleniumGeneratorOptions();
+            var myGenerator = new MySeleniumGeneratorTestClass();
+
+            // do
+            options.AddCustomGenerator(myGenerator);
+
+            // assert
+            var foundGenerator = options.CustomGenerators.FirstOrDefault(b => b.Equals(myGenerator));
+            if (foundGenerator != null)
+            {
+                Assert.AreEqual(myGenerator, foundGenerator);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void SeleniumGeneratorOptions_AddAssembly()
+        {
+            // initialize
+            var options = new SeleniumGeneratorOptions();
+            var myAssembly = new MySeleniumGeneratorTestClass().GetType().Assembly;
+
+            // do
+            options.AddAssembly(myAssembly);
+
+            // assert
+            var foundAssembly = options.Assemblies.FirstOrDefault(b => b.Equals(myAssembly));
+            if (foundAssembly != null)
+            {
+                Assert.AreEqual(myAssembly, foundAssembly);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void SeleniumGeneratorOptions_TryAddSameGenerators()
+        {
+            // initialize
+            var options = new SeleniumGeneratorOptions();
+            var myGenerator = new MySeleniumGeneratorTestClass();
+
+            // do
+            options.AddCustomGenerator(myGenerator);
+            options.AddCustomGenerator(myGenerator);
+
+            // assert
+            if (options.CustomGenerators.Count == 1)
+            {
+                Assert.AreEqual(myGenerator, options.CustomGenerators.First());
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
     }
 

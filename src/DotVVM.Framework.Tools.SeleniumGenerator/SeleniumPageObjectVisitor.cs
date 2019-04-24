@@ -6,8 +6,6 @@ using DotVVM.Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
 using DotVVM.Framework.Compilation.ControlTree;
 
@@ -80,7 +78,11 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                 {
                     var (typeName, assemblyName) = GetSplitTypeName(baseTypeDirectives);
 
-                    controlType = GetControlType(typeName, assemblyName);
+                    var baseType = GetControlType(typeName, assemblyName);
+                    if (generators.ContainsKey(baseType))
+                    {
+                        controlType = baseType;
+                    }
                 }
             }
 
