@@ -74,7 +74,8 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
             if (arguments[0] != null)
             {
-                viewFiles = GetViewsFiles(new[] { arguments[0] });
+                var parsedArguments = SplitArguments(arguments);
+                viewFiles = GetViewsFiles(parsedArguments);
             }
             else
             {
@@ -102,6 +103,19 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     GeneratePageObject(generator, config);
                 }
             }
+        }
+
+        private static IEnumerable<string> SplitArguments(Arguments arguments)
+        {
+            var i = 0;
+            var parsedArguments = new List<string>();
+            while (arguments[i] != null)
+            {
+                parsedArguments.Add(arguments[i]);
+                i++;
+            }
+
+            return parsedArguments;
         }
 
         private static void GeneratePageObject(SeleniumPageObjectGenerator generator,

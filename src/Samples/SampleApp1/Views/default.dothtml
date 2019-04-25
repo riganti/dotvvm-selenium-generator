@@ -27,6 +27,9 @@
         <li>
             <dot:RouteLink RouteName="Controls_PageWithControls" Text="Page With Controls" />
         </li>
+        <li>
+            <dot:RouteLink RouteName="Controls_SameSelectorsPage" Text="Page With Same Selectors" />
+        </li>
     </menu>
 
 </body>

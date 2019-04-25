@@ -21,14 +21,14 @@
         <legend>Control B</legend>
 
         <dot:Repeater DataSource="{value: Sections}" UITests.Name="Sections">
-            <cc:ControlB  UITests.Name="ControlB"/>
-            <dot:TextBox Text="{value: Language}"  UITests.Name="Language"/>
+            <cc:ControlB UITests.Name="ControlB" />
+            <dot:TextBox Text="{value: Language}" UITests.Name="Language" />
         </dot:Repeater>
 
-        <dot:TextBox Text="{value: Name}"  UITests.Name="Name"/>
+        <dot:TextBox Text="{value: Name}" UITests.Name="Name" />
 
         <p>
-            <dot:Button Text="Add Control B" Click="{command: AddControlB()}"  UITests.Name="AddControlB"/>
+            <dot:Button Text="Add Control B" Click="{command: AddControlB()}" UITests.Name="AddControlB" />
         </p>
 
     </fieldset>

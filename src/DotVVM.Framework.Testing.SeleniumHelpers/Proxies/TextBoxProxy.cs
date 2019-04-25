@@ -14,7 +14,10 @@
 
         public void SetText(string text)
         {
-            FindElement().SendKeys(text);
+            var element = FindElement();
+
+            element.Clear();
+            element.SendKeys(text);
         }
 
         public void Clear()

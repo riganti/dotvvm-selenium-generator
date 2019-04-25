@@ -23,6 +23,7 @@
         <None Remove="Controls\Counter.dotcontrol" />
         <None Remove="dotvvm_serialized_config.json.tmp" />
         <None Remove="Views\Controls\PageWithControls.dothtml" />
+        <None Remove="Views\Controls\SameSelectorsPage.dothtml" />
         <None Remove="Views\Default.dothtml" />
         <None Remove="Views\Forms\SignIn.dothtml" />
         <None Remove="Views\MasterPages\Layout.dotmaster" />
