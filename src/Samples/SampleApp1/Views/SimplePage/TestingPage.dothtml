@@ -33,8 +33,6 @@
             <h4>Calculating...</h4>
         </dot:UpdateProgress>--%>
 
-        <dot:FileUpload UploadedFiles="{value: Files}" UITests.Name="Files"  />
-
         <dot:GridView DataSource="{value: Customers}" UITests.Name="Customers2">
             <Columns>
                 <dot:GridViewTextColumn ValueBinding="{value: Id}" HeaderText="ID" UITests.Name="Id"/>

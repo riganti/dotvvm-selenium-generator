@@ -178,7 +178,9 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             var testProjectDirectory = dotvvmProjectMetadata.GetUITestProjectFullPath();
             if (!Directory.Exists(testProjectDirectory))
             {
-                GenerateTestProject(testProjectDirectory, dotvvmProjectMetadata.ProjectDirectory);
+                var relativeWebDirectory = Path.GetRelativePath(dotvvmProjectMetadata.GetUITestProjectFullPath(), dotvvmProjectMetadata.ProjectDirectory);
+
+                GenerateTestProject(testProjectDirectory, relativeWebDirectory);
             }
 
             // make sure we know the test project namespace
@@ -191,13 +193,13 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             metadataService.Save(dotvvmProjectMetadata);
         }
 
-        private static void GenerateTestProject(string testProjectDirectory, string projectDirectory)
+        private static void GenerateTestProject(string testProjectDirectory, string relativeWebDirectory)
         {
             var testProjectFileName = Path.GetFileName(testProjectDirectory);
-            var webProjectFileName = Path.GetFileName(projectDirectory);
             var testProjectPath = Path.Combine(testProjectDirectory, testProjectFileName + ".csproj");
-            var webProjectPath = Path.Combine(projectDirectory, webProjectFileName + ".csproj");
-            var fileContent = GetProjectFileTextContent(webProjectPath);
+            var webProjectPath = Path.Combine(relativeWebDirectory + ".csproj");
+
+            var fileContent = GetProjectFileTextContent(relativeWebDirectory, webProjectPath);
 
             FileSystemHelpers.WriteFile(testProjectPath, fileContent);
         }
@@ -211,11 +213,12 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             }
         }
 
-        private static string GetProjectFileTextContent(string projectDirectory)
+        private static string GetProjectFileTextContent(string webDirectory, string webProjectPath)
         {
             var projectTemplate = new TestProjectTemplate
             {
-                WebProjectPath = projectDirectory
+                WebProjectPath = webDirectory,
+                WebCsProjPath = webProjectPath
             };
 
             return projectTemplate.TransformText();

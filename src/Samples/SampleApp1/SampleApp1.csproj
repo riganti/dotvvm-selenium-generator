@@ -43,10 +43,10 @@
         <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     </ItemGroup>
     <ItemGroup>
-        <DotNetCliToolReference Include="DotVVM.CommandLine" Version="2.0.0" />
+        <DotNetCliToolReference Include="DotVVM.CommandLine" Version="2.2.0.1" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\dotvvm\src\DotVVM.Framework.Hosting.AspNetCore\DotVVM.Framework.Hosting.AspNetCore.csproj" />
-      <ProjectReference Include="..\..\DotVVM.Framework.Tools.SeleniumGenerator\DotVVM.Framework.Tools.SeleniumGenerator.csproj" />
+      <ProjectReference Include="..\..\DotVVM.Framework.Testing.SeleniumGenerator\DotVVM.Framework.Testing.SeleniumGenerator.csproj" />
     </ItemGroup>
 </Project>

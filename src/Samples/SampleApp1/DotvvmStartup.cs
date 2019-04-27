@@ -1,7 +1,6 @@
 ﻿using DotVVM.Framework.Configuration;
 using DotVVM.Framework.Routing;
 using DotVVM.Framework.Testing.SeleniumGenerator;
-using DotVVM.Framework.Tools.SeleniumGenerator.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SampleApp1
