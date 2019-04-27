@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Buildalyzer;
 using Buildalyzer.Workspaces;
-using DotVVM.CommandLine.Commands.Logic.SeleniumGenerator;
 using DotVVM.CommandLine.Core.Arguments;
 using DotVVM.CommandLine.Core.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
 {
@@ -77,7 +77,25 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
             try
             {
                 // process markup file
-                SeleniumGeneratorLauncher.Start(args, metadata);
+
+                var serializedMetadata = JsonConvert.SerializeObject(JsonConvert.SerializeObject(metadata));
+                var executablePath = Path.Combine(webAppDirectory, "bin\\Debug\\netcoreapp2.0\\DotVVM.Framework.Tools.SeleniumGenerator.dll");
+                var serializedPath = JsonConvert.SerializeObject(executablePath);
+                var processInfo = new ProcessStartInfo("dotnet")
+                {
+                    RedirectStandardError = true,
+                    RedirectStandardInput = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    Arguments = $"{serializedPath} --json {serializedMetadata} {args[0]}"
+                };
+
+                var process = new Process
+                {
+                    StartInfo = processInfo
+                };
+
+                StartGeneratorProcess(process);
             }
             catch (Exception e)
             {
@@ -87,6 +105,42 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests.Helpers
 
 
             return File.ReadAllText(markupFilePath);
+        }
+
+        private void StartGeneratorProcess(Process process)
+        {
+            var exited = false;
+            process.OutputDataReceived += (sender, eventArgs) => {
+                if (eventArgs?.Data?.StartsWith("#$") ?? false)
+                {
+                    exited = true;
+                }
+
+                Console.WriteLine(eventArgs?.Data);
+            };
+
+            process.ErrorDataReceived += (sender, eventArgs) => {
+                if (eventArgs?.Data?.StartsWith("#$") ?? false)
+                {
+                    exited = true;
+                }
+
+                Console.WriteLine(eventArgs?.Data);
+            };
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            while (!exited && !process.HasExited)
+            {
+            }
+
+            if (process.ExitCode != 0)
+            {
+                throw new Exception("Selenium generation failed.");
+            }
         }
 
         internal void FixReferencedProjectPath(string proxiesCsProjPath)

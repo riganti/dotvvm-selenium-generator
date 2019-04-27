@@ -4,7 +4,7 @@ using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using DotVVM.Framework.Binding;
 using System.Collections.Generic;
 using System.Linq;
-using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
+using DotVVM.Framework.Testing.SeleniumGenerator;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Helpers;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests
@@ -112,7 +112,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
             options.AddCustomGenerator(myGenerator);
 
             // assert
-            var foundGenerator = options.CustomGenerators.FirstOrDefault(b => b.Equals(myGenerator));
+            var foundGenerator = options.GetCustomGenerators().FirstOrDefault(b => b.Equals(myGenerator));
             if (foundGenerator != null)
             {
                 Assert.AreEqual(myGenerator, foundGenerator);
@@ -134,7 +134,7 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
             options.AddAssembly(myAssembly);
 
             // assert
-            var foundAssembly = options.Assemblies.FirstOrDefault(b => b.Equals(myAssembly));
+            var foundAssembly = options.GetAssemblies().FirstOrDefault(b => b.Equals(myAssembly));
             if (foundAssembly != null)
             {
                 Assert.AreEqual(myAssembly, foundAssembly);
@@ -157,9 +157,9 @@ namespace DotVVM.Testing.SeleniumGenerator.Tests
             options.AddCustomGenerator(myGenerator);
 
             // assert
-            if (options.CustomGenerators.Count == 1)
+            if (options.GetCustomGenerators().Count == 1)
             {
-                Assert.AreEqual(myGenerator, options.CustomGenerators.First());
+                Assert.AreEqual(myGenerator, options.GetCustomGenerators().First());
             }
             else
             {

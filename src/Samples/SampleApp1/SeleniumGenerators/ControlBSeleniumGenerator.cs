@@ -1,4 +1,5 @@
 ﻿using DotVVM.Framework.Binding;
+using DotVVM.Framework.Testing.SeleniumGenerator;
 using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using SampleApp1.Controls;
 

@@ -9,10 +9,12 @@ using DotVVM.CommandLine.Core.Arguments;
 using DotVVM.CommandLine.Core.Metadata;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DotVVM.Utils.ConfigurationHost.Initialization;
 using System.Reflection;
+using System.Threading;
 using DotVVM.CommandLine.Core.Templates;
-using DotVVM.Framework.Tools.SeleniumGenerator.Configuration;
+using DotVVM.Framework.Testing.SeleniumGenerator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotVVM.Framework.Tools.SeleniumGenerator
@@ -23,6 +25,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
 
         public static void Main(string[] args)
         {
+            //Console.WriteLine("pid: " + Process.GetCurrentProcess().Id);
+            //while (!Debugger.IsAttached)
+            //{
+            //    Thread.Sleep(1000);
+            //}
+
+            //Debugger.Break();
+
             try
             {
                 var arguments = new Arguments(args);
@@ -66,14 +76,14 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
             DotvvmConfiguration dotvvmConfig, 
             Arguments arguments)
         {
-            var options = dotvvmConfig.ServiceProvider.GetService<SeleniumGeneratorOptions>();
+            var options = PrepareSeleniumGeneratorOptions(dotvvmConfig);
             var generator = new SeleniumPageObjectGenerator(options, dotvvmConfig);
 
             IEnumerable<string> controlFiles = new List<string>();
             IEnumerable<string> viewFiles;
 
-            if (arguments[0] != null)
-            {
+            if (arguments[0] != null) {
+           
                 var parsedArguments = SplitArguments(arguments);
                 viewFiles = GetViewsFiles(parsedArguments);
             }
@@ -103,6 +113,13 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
                     GeneratePageObject(generator, config);
                 }
             }
+        }
+
+        private static SeleniumGeneratorOptions PrepareSeleniumGeneratorOptions(DotvvmConfiguration dotvvmConfig)
+        {
+            var options = dotvvmConfig.ServiceProvider.GetService<SeleniumGeneratorOptions>();
+            options.AddAssembly(typeof(Program).Assembly);
+            return options;
         }
 
         private static IEnumerable<string> SplitArguments(Arguments arguments)
