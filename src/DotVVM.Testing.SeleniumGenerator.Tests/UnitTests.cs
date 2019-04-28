@@ -1,11 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DotVVM.Framework.Controls;
-using DotVVM.Framework.Tools.SeleniumGenerator.Generators;
 using DotVVM.Framework.Binding;
 using System.Collections.Generic;
 using System.Linq;
 using DotVVM.Framework.Testing.SeleniumGenerator;
-using DotVVM.Framework.Tools.SeleniumGenerator.Generators.Helpers;
+using DotVVM.Framework.Testing.SeleniumGenerator.Helpers;
 
 namespace DotVVM.Testing.SeleniumGenerator.Tests
 {
