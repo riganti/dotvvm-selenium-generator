@@ -11,11 +11,11 @@
 
     <p DataContext="{value: Address}">
         Street:
-        <dot:TextBox Text="{value: Street}" Validator.Value="{value: Street}" />
+        <dot:TextBox Text="{value: Street}" Validator.Value="{value: Street}"  UITests.Name="Address_Street"/>
         City:
-        <dot:TextBox Text="{value: City}" Validator.Value="{value: City}" />
+        <dot:TextBox Text="{value: City}" Validator.Value="{value: City}"  UITests.Name="Address_City"/>
         Postal code:
-        <dot:TextBox Text="{value: PostalCode}" Validator.Value="{value: PostalCode}" />
+        <dot:TextBox Text="{value: PostalCode}" Validator.Value="{value: PostalCode}"  UITests.Name="Address_PostalCode"/>
     </p>
 
 </body>
