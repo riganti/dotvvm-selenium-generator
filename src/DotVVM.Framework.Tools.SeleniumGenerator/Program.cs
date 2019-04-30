@@ -166,15 +166,25 @@ namespace DotVVM.Framework.Tools.SeleniumGenerator
         {
             var metadataService = new DotvvmProjectMetadataService();
 
-            // make sure the test directory exists
             if (string.IsNullOrEmpty(dotvvmProjectMetadata.UITestProjectPath))
             {
                 var hintProjectName = $"..\\{dotvvmProjectMetadata.ProjectName}.Tests";
-                dotvvmProjectMetadata.UITestProjectPath = ConsoleHelpers.AskForValue(
-                    $"Enter the path to the test project\n(relative to DotVVM project directory, e.g. '{hintProjectName}'): ",
-                    hintProjectName);
+
+                if (!Console.IsInputRedirected)
+                {
+                    dotvvmProjectMetadata.UITestProjectPath = 
+                        ConsoleHelpers.AskForValue($"Enter the path to the test project\n(relative to DotVVM project directory, e.g. '{hintProjectName}'): ",
+                        hintProjectName);
+                }
+                else
+                {
+                    dotvvmProjectMetadata.UITestProjectPath = hintProjectName;
+                }
+
+                Console.WriteLine($@"Path to test project is set to ""{dotvvmProjectMetadata.UITestProjectPath}""");
             }
 
+            // make sure the test directory exists
             var testProjectDirectory = dotvvmProjectMetadata.GetUITestProjectFullPath();
             if (!Directory.Exists(testProjectDirectory))
             {
